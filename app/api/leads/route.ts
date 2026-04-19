@@ -1,23 +1,32 @@
 import { NextRequest, NextResponse } from "next/server";
 import { Ratelimit } from "@upstash/ratelimit";
 import { Redis } from "@upstash/redis";
-import { Resend } from "resend";
-import { createClient } from "@/lib/supabase/server";
+import { createAdminClient } from "@/lib/supabase/admin";
+import { sendLeadNotificationEmails } from "@/lib/email/send";
 import { leadSchema } from "@/lib/schemas/lead";
+import type { LeadRecord } from "@/lib/types";
 
 function getRatelimit() {
+  const url = process.env.UPSTASH_REDIS_REST_URL;
+  const token = process.env.UPSTASH_REDIS_REST_TOKEN;
+
+  if (
+    !url ||
+    !token ||
+    url.includes("your_upstash") ||
+    token.includes("your_upstash")
+  ) {
+    return null;
+  }
+
   return new Ratelimit({
     redis: Redis.fromEnv(),
-    limiter: Ratelimit.slidingWindow(5, "1 h"),
+    limiter: Ratelimit.slidingWindow(5, "15 m"),
     analytics: false,
   });
 }
 
-function getResend() {
-  return new Resend(process.env.RESEND_API_KEY);
-}
-
-async function verifyTurnstile(token: string): Promise<boolean> {
+async function verifyTurnstile(token: string) {
   const res = await fetch(
     "https://challenges.cloudflare.com/turnstile/v0/siteverify",
     {
@@ -29,25 +38,28 @@ async function verifyTurnstile(token: string): Promise<boolean> {
       }),
     }
   );
-  const data = await res.json();
+
+  const data = (await res.json()) as { success?: boolean };
   return data.success === true;
 }
 
 export async function POST(request: NextRequest) {
-  // 1. Rate limit by IP
   const ip =
     request.headers.get("x-forwarded-for")?.split(",")[0].trim() ??
     "127.0.0.1";
 
-  const { success: withinLimit } = await getRatelimit().limit(ip);
-  if (!withinLimit) {
-    return NextResponse.json(
-      { error: "Too many requests. Try again later." },
-      { status: 429 }
-    );
+  const ratelimit = getRatelimit();
+  if (ratelimit) {
+    const { success } = await ratelimit.limit(ip);
+
+    if (!success) {
+      return NextResponse.json(
+        { error: "Too many requests. Try again later." },
+        { status: 429 }
+      );
+    }
   }
 
-  // 2. Parse body
   let body: unknown;
   try {
     body = await request.json();
@@ -55,7 +67,6 @@ export async function POST(request: NextRequest) {
     return NextResponse.json({ error: "Invalid request body." }, { status: 400 });
   }
 
-  // 3. Validate with Zod
   const result = leadSchema.safeParse(body);
   if (!result.success) {
     return NextResponse.json(
@@ -64,9 +75,12 @@ export async function POST(request: NextRequest) {
     );
   }
 
-  const { turnstile_token, ...lead } = result.data;
+  const { turnstile_token, website, ...lead } = result.data;
 
-  // 4. Verify Turnstile
+  if (website) {
+    return NextResponse.json({ success: true });
+  }
+
   const turnstileOk = await verifyTurnstile(turnstile_token);
   if (!turnstileOk) {
     return NextResponse.json(
@@ -75,9 +89,50 @@ export async function POST(request: NextRequest) {
     );
   }
 
-  // 5. Insert into Supabase
-  const supabase = await createClient();
-  const { error: dbError } = await supabase.from("leads").insert(lead);
+  const supabase = createAdminClient();
+
+  const { data: service, error: serviceError } = await supabase
+    .from("services")
+    .select("id, name")
+    .eq("id", lead.service_id)
+    .eq("is_active", true)
+    .maybeSingle();
+
+  if (serviceError || !service) {
+    return NextResponse.json(
+      { error: "Please choose a valid service." },
+      { status: 400 }
+    );
+  }
+
+  const duplicateCutoff = new Date(Date.now() - 10 * 60 * 1000).toISOString();
+  const { data: recentDuplicate } = await supabase
+    .from("leads")
+    .select("id")
+    .eq("email", lead.email)
+    .eq("phone", lead.phone)
+    .gte("created_at", duplicateCutoff)
+    .maybeSingle();
+
+  if (recentDuplicate) {
+    return NextResponse.json(
+      { error: "We already received a recent request from this contact info." },
+      { status: 429 }
+    );
+  }
+
+  const { data: insertedLead, error: dbError } = await supabase
+    .from("leads")
+    .insert({
+      ...lead,
+      service_name: service.name,
+      status: "new" as const,
+    })
+    .select(
+      "id, first_name, last_name, phone, email, service_id, service_name, location_address, location_lat, location_lng, message, status, internal_notes, quoted_amount, estimate_sent_at, approved_at, rejected_at, scheduled_job_id, created_at"
+    )
+    .single();
+
   if (dbError) {
     console.error("Supabase insert error:", dbError);
     return NextResponse.json(
@@ -86,21 +141,11 @@ export async function POST(request: NextRequest) {
     );
   }
 
-  // 6. Send notification email
-  await getResend().emails.send({
-    from: "SudsOnWheels <noreply@sudsonwheelsusa.com>",
-    to: process.env.OWNER_EMAIL!,
-    subject: `New quote request — ${lead.first_name} ${lead.last_name}`,
-    text: [
-      `Name: ${lead.first_name} ${lead.last_name}`,
-      `Phone: ${lead.phone}`,
-      `Email: ${lead.email}`,
-      `Service: ${lead.service}`,
-      lead.message ? `Message: ${lead.message}` : "",
-    ]
-      .filter(Boolean)
-      .join("\n"),
-  });
+  void sendLeadNotificationEmails(insertedLead satisfies LeadRecord).catch(
+    (error) => {
+      console.error("Lead email failure:", error);
+    }
+  );
 
   return NextResponse.json({ success: true });
 }

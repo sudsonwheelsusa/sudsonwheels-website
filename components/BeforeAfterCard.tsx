@@ -2,42 +2,62 @@ interface BeforeAfterCardProps {
   title: string;
   location: string;
   detail: string;
-  beforeIcon: string;
-  afterIcon: string;
+  beforeImageUrl?: string | null;
+  afterImageUrl?: string | null;
+  beforeLabel?: string | null;
+  afterLabel?: string | null;
 }
 
 export default function BeforeAfterCard({
   title,
   location,
   detail,
-  beforeIcon,
-  afterIcon,
+  beforeImageUrl,
+  afterImageUrl,
+  beforeLabel,
+  afterLabel,
 }: BeforeAfterCardProps) {
   return (
-    <div className="border border-gray-200 rounded-xl overflow-hidden bg-white">
+    <div className="overflow-hidden rounded-xl border border-gray-200 bg-white">
       <div className="grid grid-cols-2">
-        <div className="bg-slate-300 h-28 flex items-center justify-center relative">
-          {/* Replace with <Image src={beforeSrc} alt="Before" fill className="object-cover" /> */}
-          <span className="absolute top-2 left-2 bg-black/55 text-white text-[9px] font-bold px-2 py-0.5 rounded">
+        <div className="relative flex h-28 items-center justify-center bg-slate-300">
+          <span className="absolute top-2 left-2 rounded bg-black/55 px-2 py-0.5 text-[9px] font-bold text-white">
             BEFORE
           </span>
-          <span className="text-3xl" role="img" aria-label="before">
-            {beforeIcon}
-          </span>
+          {beforeImageUrl ? (
+            <img
+              src={beforeImageUrl}
+              alt={`${title} before`}
+              className="h-full w-full object-cover"
+              loading="lazy"
+            />
+          ) : (
+            <span className="px-4 text-center text-xs font-semibold text-slate-700">
+              {beforeLabel ?? "Before photo coming soon"}
+            </span>
+          )}
         </div>
-        <div className="bg-blue-200 h-28 flex items-center justify-center relative">
-          {/* Replace with <Image src={afterSrc} alt="After" fill className="object-cover" /> */}
-          <span className="absolute top-2 left-2 bg-navy text-white text-[9px] font-bold px-2 py-0.5 rounded">
+        <div className="relative flex h-28 items-center justify-center bg-blue-200">
+          <span className="absolute top-2 left-2 rounded bg-navy px-2 py-0.5 text-[9px] font-bold text-white">
             AFTER
           </span>
-          <span className="text-3xl" role="img" aria-label="after">
-            {afterIcon}
-          </span>
+          {afterImageUrl ? (
+            <img
+              src={afterImageUrl}
+              alt={`${title} after`}
+              className="h-full w-full object-cover"
+              loading="lazy"
+            />
+          ) : (
+            <span className="px-4 text-center text-xs font-semibold text-navy">
+              {afterLabel ?? "After photo coming soon"}
+            </span>
+          )}
         </div>
       </div>
       <div className="px-4 py-3">
-        <p className="text-navy font-bold text-sm">{title}</p>
-        <p className="text-gray-400 text-[11px] mt-0.5">
+        <p className="text-sm font-bold text-navy">{title}</p>
+        <p className="mt-0.5 text-[11px] text-gray-400">
           {location} · {detail}
         </p>
       </div>

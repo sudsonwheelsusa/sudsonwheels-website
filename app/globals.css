@@ -1,6 +1,7 @@
 @import "tailwindcss";
 @import "tw-animate-css";
 @import "shadcn/tailwind.css";
+@import "leaflet/dist/leaflet.css";
 
 @custom-variant dark (&:is(.dark *));
 
@@ -131,4 +132,19 @@
   html {
     @apply font-sans;
   }
+}
+
+.location-pin-wrapper {
+  background: transparent;
+  border: 0;
+}
+
+.location-pin-dot {
+  display: block;
+  height: 22px;
+  width: 22px;
+  border-radius: 9999px;
+  border: 4px solid white;
+  background: #c8102e;
+  box-shadow: 0 8px 18px rgb(29 53 87 / 32%);
 }

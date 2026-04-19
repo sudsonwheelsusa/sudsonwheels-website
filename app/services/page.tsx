@@ -1,7 +1,8 @@
 import type { Metadata } from "next";
 import Link from "next/link";
-import ServiceCard from "@/components/ServiceCard";
 import BeforeAfterCard from "@/components/BeforeAfterCard";
+import ServiceCard from "@/components/ServiceCard";
+import { getPublicGallery, getPublicServices } from "@/lib/site-data";
 
 export const metadata: Metadata = {
   title: "Services",
@@ -9,137 +10,77 @@ export const metadata: Metadata = {
     "Pressure washing services for houses, driveways, decks, gutters, roof soft wash, and commercial fleet washing in Ashland and North Central Ohio.",
 };
 
-const SERVICES = [
-  {
-    name: "House & Siding",
-    description:
-      "Remove dirt, mold, and mildew from your home's exterior. Safe for vinyl, wood, and brick.",
-    icon: "🏠",
-  },
-  {
-    name: "Driveways & Concrete",
-    description:
-      "Strip stains, oil, and grime from concrete and paver surfaces. Looks like new.",
-    icon: "🚗",
-  },
-  {
-    name: "Decks & Fences",
-    description:
-      "Prep your deck or fence for staining, or just restore it to its natural color.",
-    icon: "🌲",
-  },
-  {
-    name: "Gutters",
-    description:
-      "Flush debris and built-up grime from your gutters and downspouts.",
-    icon: "🍂",
-  },
-  {
-    name: "Fleet Washing",
-    description:
-      "Keep your commercial vehicles looking sharp. We come to your lot on a schedule.",
-    icon: "🚛",
-  },
-  {
-    name: "Roof Soft Wash",
-    description:
-      "Low-pressure treatment to safely remove algae and staining from shingles.",
-    icon: "🏚️",
-  },
-];
+export default async function ServicesPage() {
+  const [services, gallery] = await Promise.all([
+    getPublicServices(),
+    getPublicGallery(),
+  ]);
 
-const GALLERY = [
-  {
-    title: "House Wash — Ashland, OH",
-    location: "Ashland, OH",
-    detail: "Vinyl siding · Full exterior",
-    beforeIcon: "🏠",
-    afterIcon: "✨",
-  },
-  {
-    title: "Driveway — Mansfield, OH",
-    location: "Mansfield, OH",
-    detail: "Concrete · Oil stain removal",
-    beforeIcon: "🚗",
-    afterIcon: "✨",
-  },
-  {
-    title: "Deck Wash — Wooster, OH",
-    location: "Wooster, OH",
-    detail: "Cedar deck · Pre-stain prep",
-    beforeIcon: "🌲",
-    afterIcon: "✨",
-  },
-  {
-    title: "Fleet Wash — Ontario, OH",
-    location: "Ontario, OH",
-    detail: "4 vehicles · Monthly contract",
-    beforeIcon: "🚛",
-    afterIcon: "✨",
-  },
-];
-
-export default function ServicesPage() {
   return (
     <main>
-      {/* Page Hero */}
-      <section className="bg-gray-50 border-b border-gray-200 px-6 py-12">
-        <div className="max-w-6xl mx-auto">
-          <p className="text-brand-red text-[10px] font-bold tracking-[0.2em] uppercase mb-2">
+      <section className="border-b border-gray-200 bg-gray-50 px-6 py-12">
+        <div className="mx-auto max-w-6xl">
+          <p className="mb-2 text-[10px] font-bold uppercase tracking-[0.2em] text-brand-red">
             What We Do
           </p>
-          <h1 className="text-navy text-4xl font-black mb-2">Our Services</h1>
-          <p className="text-gray-500 text-base">
+          <h1 className="mb-2 text-4xl font-black text-navy">Our Services</h1>
+          <p className="text-base text-gray-500">
             Professional pressure washing for residential and commercial
             customers across North Central Ohio.
           </p>
         </div>
       </section>
 
-      {/* Service Card Grid */}
-      <section className="max-w-6xl mx-auto px-6 py-12">
-        <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-5">
-          {SERVICES.map((s) => (
+      <section className="mx-auto max-w-6xl px-6 py-12">
+        <div className="grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
+          {services.map((service) => (
             <ServiceCard
-              key={s.name}
-              name={s.name}
-              description={s.description}
-              icon={s.icon}
+              key={service.id}
+              name={service.name}
+              description={service.description}
+              icon={service.icon}
             />
           ))}
         </div>
       </section>
 
-      {/* Before & After Gallery */}
-      <section className="bg-gray-50 border-t border-gray-200 px-6 py-12">
-        <div className="max-w-6xl mx-auto">
-          <p className="text-brand-red text-[10px] font-bold tracking-[0.2em] uppercase mb-2">
+      <section className="border-t border-gray-200 bg-gray-50 px-6 py-12">
+        <div className="mx-auto max-w-6xl">
+          <p className="mb-2 text-[10px] font-bold uppercase tracking-[0.2em] text-brand-red">
             Results
           </p>
-          <h2 className="text-navy text-3xl font-black mb-2">Before &amp; After</h2>
-          <p className="text-gray-500 text-sm mb-8">
+          <h2 className="mb-2 text-3xl font-black text-navy">Before &amp; After</h2>
+          <p className="mb-8 text-sm text-gray-500">
             Real jobs, real results. Photos added as we complete work.
           </p>
-          <div className="grid sm:grid-cols-2 gap-5">
-            {GALLERY.map((item) => (
-              <BeforeAfterCard key={item.title} {...item} />
+          <div className="grid gap-5 sm:grid-cols-2">
+            {gallery.map((item) => (
+              <BeforeAfterCard
+                key={item.id}
+                title={item.title}
+                location={item.location}
+                detail={item.detail}
+                beforeImageUrl={item.before_image_url}
+                afterImageUrl={item.after_image_url}
+                beforeLabel={item.before_label}
+                afterLabel={item.after_label}
+              />
             ))}
           </div>
         </div>
       </section>
 
-      {/* CTA Bar */}
       <section className="border-t border-gray-200 px-6 py-10">
-        <div className="max-w-6xl mx-auto flex flex-col sm:flex-row items-center justify-between gap-6">
+        <div className="mx-auto flex max-w-6xl flex-col items-center justify-between gap-6 sm:flex-row">
           <div>
-            <p className="text-navy font-bold text-lg">Want results like these?</p>
-            <p className="text-gray-400 text-sm mt-0.5">
-              We&apos;ll give you a free estimate — no pressure.
+            <p className="text-lg font-bold text-navy">Want results like these?</p>
+            <p className="mt-0.5 text-sm text-gray-400">
+              We&apos;ll give you a free estimate - no pressure.
             </p>
           </div>
           <Link
             href="/contact"
-            className="bg-brand-red text-white font-bold text-sm px-6 py-3 rounded-md hover:bg-brand-red/90 transition-colors whitespace-nowrap"
+            className="whitespace-nowrap rounded-md bg-brand-red px-6 py-3 text-sm font-bold text-white transition-colors hover:bg-brand-red/90"
           >
             Get a Free Quote
           </Link>
