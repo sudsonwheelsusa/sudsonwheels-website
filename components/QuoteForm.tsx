@@ -70,6 +70,7 @@ export default function QuoteForm() {
   }
 
   return (
+    // eslint-disable-next-line react-hooks/refs
     <form onSubmit={handleSubmit(onSubmit)} noValidate className="space-y-4">
       <h3 className="text-navy font-black text-lg mb-1">Request a Free Quote</h3>
 

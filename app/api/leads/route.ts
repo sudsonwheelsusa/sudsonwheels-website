@@ -5,13 +5,17 @@ import { Resend } from "resend";
 import { createClient } from "@/lib/supabase/server";
 import { leadSchema } from "@/lib/schemas/lead";
 
-const ratelimit = new Ratelimit({
-  redis: Redis.fromEnv(),
-  limiter: Ratelimit.slidingWindow(5, "1 h"),
-  analytics: false,
-});
+function getRatelimit() {
+  return new Ratelimit({
+    redis: Redis.fromEnv(),
+    limiter: Ratelimit.slidingWindow(5, "1 h"),
+    analytics: false,
+  });
+}
 
-const resend = new Resend(process.env.RESEND_API_KEY);
+function getResend() {
+  return new Resend(process.env.RESEND_API_KEY);
+}
 
 async function verifyTurnstile(token: string): Promise<boolean> {
   const res = await fetch(
@@ -35,7 +39,7 @@ export async function POST(request: NextRequest) {
     request.headers.get("x-forwarded-for")?.split(",")[0].trim() ??
     "127.0.0.1";
 
-  const { success: withinLimit } = await ratelimit.limit(ip);
+  const { success: withinLimit } = await getRatelimit().limit(ip);
   if (!withinLimit) {
     return NextResponse.json(
       { error: "Too many requests. Try again later." },
@@ -83,7 +87,7 @@ export async function POST(request: NextRequest) {
   }
 
   // 6. Send notification email
-  await resend.emails.send({
+  await getResend().emails.send({
     from: "SudsOnWheels <noreply@sudsonwheelsusa.com>",
     to: process.env.OWNER_EMAIL!,
     subject: `New quote request — ${lead.first_name} ${lead.last_name}`,
