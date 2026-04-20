@@ -15,7 +15,7 @@ export const leadSchema = z.object({
   message: z.string().max(5000).optional(),
   website: z.string().max(0).optional(),
   turnstile_token: z
-    .string({ invalid_type_error: "Bot verification required" })
+    .string({ error: "Bot verification required" })
     .min(1, "Bot verification required"),
 });
 
