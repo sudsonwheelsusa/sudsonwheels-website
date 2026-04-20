@@ -3,6 +3,7 @@ import { createAdminClient } from "@/lib/supabase/admin";
 import { createClient } from "@/lib/supabase/server";
 import { adminLeadWorkflowSchema } from "@/lib/schemas/admin-workflow";
 import { sendQuoteEmail, sendScheduledJobEmail } from "@/lib/email/send";
+import { generateJobIcs } from "@/lib/ics";
 import type { JobRecord, LeadRecord } from "@/lib/types";
 
 async function requireAdminIdentity() {
@@ -179,9 +180,11 @@ export async function POST(
   }
 
   if (input.action === "schedule" && jobRecord) {
+    const icsContent = generateJobIcs(jobRecord);
     void sendScheduledJobEmail({
       lead: updatedLead satisfies LeadRecord,
       job: jobRecord,
+      icsContent,
     }).catch((error) => {
       console.error("Scheduled job email failure:", error);
     });
