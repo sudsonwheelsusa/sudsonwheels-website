@@ -1,7 +1,7 @@
 "use client";
 
 import type { FormEvent } from "react";
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { Button } from "@/components/ui/button";
 import { createClient } from "@/lib/supabase/browser";
 import type { GalleryRecord } from "@/lib/types";
@@ -22,7 +22,7 @@ export default function GallerySection() {
     after_file: null as File | null,
   });
 
-  async function load() {
+  const load = useCallback(async () => {
     setLoading(true);
     const supabase = createClient();
     const { data, error: err } = await supabase
@@ -43,9 +43,10 @@ export default function GallerySection() {
 
     setItems(withUrls);
     setLoading(false);
-  }
+  }, []);
 
-  useEffect(() => { void load(); }, []);
+  // eslint-disable-next-line react-hooks/set-state-in-effect
+  useEffect(() => { void load(); }, [load]);
 
   async function uploadFile(file: File, folder: "before" | "after") {
     const supabase = createClient();

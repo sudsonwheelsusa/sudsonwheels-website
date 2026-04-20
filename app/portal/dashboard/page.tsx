@@ -14,10 +14,8 @@ export default async function AdminDashboardPage() {
   const adminIdentity = await requireAdmin();
 
   return (
-    <main className="min-h-[calc(100vh-8rem)] bg-slate-50 px-6 py-10">
-      <div className="mx-auto max-w-7xl">
-        <AdminDashboard initialAdminEmail={adminIdentity.email} />
-      </div>
+    <main className="min-h-[calc(100vh-8rem)]">
+      <AdminDashboard initialAdminEmail={adminIdentity.email} />
     </main>
   );
 }

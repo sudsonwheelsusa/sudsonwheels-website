@@ -41,7 +41,7 @@ export default function OverviewSection() {
     <div className="space-y-8">
       <div>
         <h2 className="text-2xl font-black text-navy">Overview</h2>
-        <p className="text-sm text-slate-500 mt-1">Welcome back. Here's what's active.</p>
+        <p className="text-sm text-slate-500 mt-1">Welcome back. Here&apos;s what&apos;s active.</p>
       </div>
 
       <div className="grid grid-cols-1 gap-4 sm:grid-cols-3">

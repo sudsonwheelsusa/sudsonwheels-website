@@ -1,6 +1,6 @@
 "use client";
 
-import { startTransition, useDeferredValue, useEffect, useState } from "react";
+import { startTransition, useCallback, useDeferredValue, useEffect, useState } from "react";
 import { createClient } from "@/lib/supabase/browser";
 import type { LeadRecord } from "@/lib/types";
 import LeadCard from "./LeadCard";
@@ -32,7 +32,7 @@ export default function LeadsPipeline() {
   const [showDone, setShowDone] = useState(false);
   const deferred = useDeferredValue(search);
 
-  async function loadLeads() {
+  const loadLeads = useCallback(async () => {
     const supabase = createClient();
     const { data, error: err } = await supabase
       .from("leads")
@@ -45,9 +45,10 @@ export default function LeadsPipeline() {
       startTransition(() => setLeads((data ?? []) as LeadRecord[]));
     }
     setLoading(false);
-  }
+  }, []);
 
-  useEffect(() => { void loadLeads(); }, []);
+  // eslint-disable-next-line react-hooks/set-state-in-effect
+  useEffect(() => { void loadLeads(); }, [loadLeads]);
 
   const filtered = leads.filter((lead) => {
     const term = deferred.trim().toLowerCase();

@@ -1,7 +1,7 @@
 "use client";
 
 import type { FormEvent } from "react";
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { Button } from "@/components/ui/button";
 import { createClient } from "@/lib/supabase/browser";
 import { SERVICE_ICON_OPTIONS, ServiceIcon } from "@/lib/service-icons";
@@ -19,7 +19,7 @@ export default function ServicesSection() {
     sort_order: "7",
   });
 
-  async function load() {
+  const load = useCallback(async () => {
     setLoading(true);
     const supabase = createClient();
     const { data, error: err } = await supabase
@@ -29,9 +29,10 @@ export default function ServicesSection() {
     if (err) setError(err.message);
     else setServices((data ?? []) as ServiceRecord[]);
     setLoading(false);
-  }
+  }, []);
 
-  useEffect(() => { void load(); }, []);
+  // eslint-disable-next-line react-hooks/set-state-in-effect
+  useEffect(() => { void load(); }, [load]);
 
   async function handleAdd(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
