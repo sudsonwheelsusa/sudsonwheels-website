@@ -20,6 +20,7 @@ export default function QuoteForm({ serviceOptions }: QuoteFormProps) {
     "idle"
   );
   const [errorMsg, setErrorMsg] = useState("");
+  const [turnstileError, setTurnstileError] = useState(false);
   const [selectedLocation, setSelectedLocation] = useState<LatLngLiteral | null>(
     null
   );
@@ -216,11 +217,15 @@ export default function QuoteForm({ serviceOptions }: QuoteFormProps) {
       <Turnstile
         ref={turnstileRef}
         siteKey={process.env.NEXT_PUBLIC_TURNSTILE_SITE_KEY!}
-        onSuccess={(token) => setValue("turnstile_token", token, { shouldValidate: true })}
-        onError={() => setValue("turnstile_token", "", { shouldValidate: true })}
-        onExpire={() => setValue("turnstile_token", "", { shouldValidate: true })}
+        onSuccess={(token) => { setTurnstileError(false); setValue("turnstile_token", token, { shouldValidate: true }); }}
+        onError={() => { setTurnstileError(true); setValue("turnstile_token", "", { shouldValidate: true }); }}
+        onExpire={() => { setTurnstileError(false); setValue("turnstile_token", "", { shouldValidate: true }); }}
       />
-      {errors.turnstile_token ? (
+      {turnstileError ? (
+        <p className="text-xs text-brand-red">
+          Bot verification failed to load. Try disabling tracking protection or use a different browser.
+        </p>
+      ) : errors.turnstile_token ? (
         <p className="text-xs text-brand-red">{errors.turnstile_token.message}</p>
       ) : null}
 

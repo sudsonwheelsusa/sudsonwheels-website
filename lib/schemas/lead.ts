@@ -14,7 +14,9 @@ export const leadSchema = z.object({
   location_lng: z.number().min(-180).max(180).optional(),
   message: z.string().max(5000).optional(),
   website: z.string().max(0).optional(),
-  turnstile_token: z.string().min(1, "Bot verification required"),
+  turnstile_token: z
+    .string({ invalid_type_error: "Bot verification required" })
+    .min(1, "Bot verification required"),
 });
 
 export type LeadInput = z.infer<typeof leadSchema>;
