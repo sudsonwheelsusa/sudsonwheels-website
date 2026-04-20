@@ -1,7 +1,8 @@
 "use client";
 
+import { Turnstile, type TurnstileInstance } from "@marsidev/react-turnstile";
 import type { FormEvent } from "react";
-import { useState } from "react";
+import { useRef, useState } from "react";
 import { useRouter } from "next/navigation";
 import { Button } from "@/components/ui/button";
 import { createClient } from "@/lib/supabase/browser";
@@ -12,21 +13,30 @@ export default function AdminLoginForm() {
   const [password, setPassword] = useState("");
   const [status, setStatus] = useState<"idle" | "loading" | "error">("idle");
   const [message, setMessage] = useState("");
+  const [turnstileToken, setTurnstileToken] = useState("");
+  const [turnstileError, setTurnstileError] = useState(false);
+  const turnstileRef = useRef<TurnstileInstance>(null);
 
   async function handleSubmit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
+
+    if (!turnstileToken) {
+      setStatus("error");
+      setMessage("Please complete the bot verification.");
+      return;
+    }
+
     setStatus("loading");
     setMessage("");
 
     const supabase = createClient();
-    const { error } = await supabase.auth.signInWithPassword({
-      email,
-      password,
-    });
+    const { error } = await supabase.auth.signInWithPassword({ email, password });
 
     if (error) {
       setStatus("error");
       setMessage(error.message);
+      turnstileRef.current?.reset();
+      setTurnstileToken("");
       return;
     }
 
@@ -65,6 +75,19 @@ export default function AdminLoginForm() {
           required
         />
       </div>
+
+      <Turnstile
+        ref={turnstileRef}
+        siteKey={process.env.NEXT_PUBLIC_TURNSTILE_SITE_KEY!}
+        onSuccess={(token) => { setTurnstileError(false); setTurnstileToken(token); }}
+        onError={() => { setTurnstileError(true); setTurnstileToken(""); }}
+        onExpire={() => { setTurnstileError(false); setTurnstileToken(""); }}
+      />
+      {turnstileError ? (
+        <p className="text-xs text-brand-red">
+          Bot verification failed to load. Try disabling tracking protection or use a different browser.
+        </p>
+      ) : null}
 
       {status === "error" ? (
         <p className="rounded-xl border border-red-200 bg-red-50 px-3 py-2 text-sm text-brand-red">
