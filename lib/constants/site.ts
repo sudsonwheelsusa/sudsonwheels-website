@@ -1,6 +1,6 @@
-export const PHONE = "4195550000";
-export const PHONE_DISPLAY = "(419) 555-0000";
-export const CONTACT_EMAIL = "hello@sudsonwheelsusa.com";
+export const PHONE = "3309270080";
+export const PHONE_DISPLAY = "(330) 927-0080";
+export const CONTACT_EMAIL = "contact@sudsonwheelsusa.com";
 export const BASE_CITY = "Ashland, OH";
 export const MAP_DEFAULT_CENTER = {
   lat: 40.8687,
@@ -14,11 +14,11 @@ export const SOCIAL_LINKS = [
   },
   {
     label: "Instagram",
-    href: "https://instagram.com/sudsonwheelsusa",
+    href: "https://www.instagram.com/suds_on_wheels/",
   },
   {
     label: "TikTok",
-    href: "https://www.tiktok.com/@sudsonwheelsusa",
+    href: "https://www.tiktok.com/@suds_on_wheels",
   },
 ] as const;
 

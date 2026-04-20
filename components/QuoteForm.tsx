@@ -130,7 +130,7 @@ export default function QuoteForm({ serviceOptions }: QuoteFormProps) {
           <input
             {...register("phone")}
             type="tel"
-            placeholder="(419) 555-0000"
+            placeholder="(330) 927-0080"
             className="w-full rounded-md border border-gray-200 bg-gray-50 px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-navy/30"
           />
           {errors.phone ? (
