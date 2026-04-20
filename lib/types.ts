@@ -43,6 +43,7 @@ export interface LeadRecord {
   approved_at: string | null;
   rejected_at: string | null;
   scheduled_job_id: string | null;
+  completed_at: string | null;
   created_at: string;
 }
 
