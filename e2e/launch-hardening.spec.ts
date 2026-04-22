@@ -5,7 +5,7 @@ import { test, expect } from "@playwright/test";
 // Security headers
 // ---------------------------------------------------------------------------
 
-test("public pages include required security headers", async ({ request }) => {
+test("homepage includes required security headers", async ({ request }) => {
   const response = await request.get("http://localhost:3000/");
   const headers = response.headers();
 
@@ -19,6 +19,7 @@ test("public pages include required security headers", async ({ request }) => {
 
 test("portal route includes X-Robots-Tag noindex", async ({ request }) => {
   const response = await request.get("http://localhost:3000/portal");
+  expect(response.status()).toBe(200);
   const headers = response.headers();
   expect(headers["x-robots-tag"]).toBe("noindex, nofollow");
 });
@@ -43,6 +44,7 @@ test("sitemap.xml includes all public pages and excludes portal", async ({ reque
   expect(body).toContain("sudsonwheelsusa.com/services");
   expect(body).toContain("sudsonwheelsusa.com/about");
   expect(body).toContain("sudsonwheelsusa.com/contact");
+  expect(body).toContain("sudsonwheelsusa.com/gallery");
   expect(body).not.toContain("/portal");
 });
 
@@ -56,6 +58,7 @@ test("homepage has LocalBusiness JSON-LD schema", async ({ page }) => {
   expect(jsonLd["@type"]).toBe("LocalBusiness");
   expect(jsonLd.name).toBe("SudsOnWheels");
   expect(jsonLd.telephone).toBe("+13309270080");
+  expect(jsonLd.url).toBe("https://sudsonwheelsusa.com");
 });
 
 // ---------------------------------------------------------------------------
@@ -64,6 +67,7 @@ test("homepage has LocalBusiness JSON-LD schema", async ({ page }) => {
 
 test("portal login page shows no main site navigation", async ({ page }) => {
   await page.goto("/portal");
+  await expect(page.locator('input[type="email"]')).toBeVisible();
   await expect(page.getByRole("link", { name: "Services" })).not.toBeVisible();
   await expect(page.getByRole("link", { name: "About" })).not.toBeVisible();
   await expect(page.getByRole("link", { name: "Get a Quote" })).not.toBeVisible();
@@ -71,6 +75,7 @@ test("portal login page shows no main site navigation", async ({ page }) => {
 
 test("portal login page has no text revealing it is admin", async ({ page }) => {
   await page.goto("/portal");
+  await expect(page.getByRole("button", { name: /sign in/i })).toBeVisible();
   await expect(page.getByText("Hidden Admin Access")).not.toBeVisible();
   await expect(page.getByText("admin workflow")).not.toBeVisible();
   await expect(page.getByText("Supabase auth")).not.toBeVisible();
@@ -82,6 +87,7 @@ test("portal login page has no text revealing it is admin", async ({ page }) => 
 
 test("footer does not expose tech stack or internal details", async ({ page }) => {
   await page.goto("/");
+  await expect(page.getByText(/Licensed, insured/)).toBeVisible();
   await expect(page.getByText("Supabase")).not.toBeVisible();
   await expect(page.getByText("admin workflow")).not.toBeVisible();
 });
