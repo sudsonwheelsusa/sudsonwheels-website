@@ -53,6 +53,7 @@ export default function BeforeAfterCarousel({
           {Array.from({ length: total }).map((_, i) => (
             <button
               key={i}
+              type="button"
               onClick={() => setIndex(i)}
               aria-label={`View photo ${i + 1}`}
               className={`h-1.5 rounded-full transition-all ${
@@ -95,10 +96,11 @@ function PhotoSlot({
       </span>
       {url ? (
         <Image
+          key={url}
           src={url}
           alt={alt}
           fill
-          className="object-cover"
+          className="object-cover [animation:gallery-fade_0.18s_ease-out]"
           sizes="(max-width: 768px) 50vw, 33vw"
         />
       ) : (

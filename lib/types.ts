@@ -3,6 +3,8 @@ export interface ServiceRecord {
   name: string;
   description: string;
   icon: string | null;
+  image_path: string | null;
+  image_url?: string | null;
   sort_order: number;
   is_active: boolean;
   created_at?: string;

@@ -1,3 +1,5 @@
+import Image from "next/image";
+
 interface BeforeAfterCardProps {
   title: string;
   location: string;
@@ -20,36 +22,38 @@ export default function BeforeAfterCard({
   return (
     <div className="overflow-hidden rounded-xl border border-gray-200 bg-white">
       <div className="grid grid-cols-2">
-        <div className="relative flex h-28 items-center justify-center bg-slate-300">
-          <span className="absolute top-2 left-2 rounded bg-black/55 px-2 py-0.5 text-[9px] font-bold text-white">
+        <div className="relative h-56 bg-slate-300">
+          <span className="absolute top-2 left-2 z-10 rounded bg-black/55 px-2 py-0.5 text-[9px] font-bold text-white">
             BEFORE
           </span>
           {beforeImageUrl ? (
-            <img
+            <Image
               src={beforeImageUrl}
               alt={`${title} before`}
-              className="h-full w-full object-cover"
-              loading="lazy"
+              fill
+              className="object-cover"
+              sizes="(max-width: 768px) 50vw, 33vw"
             />
           ) : (
-            <span className="px-4 text-center text-xs font-semibold text-slate-700">
+            <span className="flex h-full items-center justify-center px-4 text-center text-xs font-semibold text-slate-700">
               {beforeLabel ?? "Before photo coming soon"}
             </span>
           )}
         </div>
-        <div className="relative flex h-28 items-center justify-center bg-blue-200">
-          <span className="absolute top-2 left-2 rounded bg-navy px-2 py-0.5 text-[9px] font-bold text-white">
+        <div className="relative h-56 bg-blue-200">
+          <span className="absolute top-2 left-2 z-10 rounded bg-navy px-2 py-0.5 text-[9px] font-bold text-white">
             AFTER
           </span>
           {afterImageUrl ? (
-            <img
+            <Image
               src={afterImageUrl}
               alt={`${title} after`}
-              className="h-full w-full object-cover"
-              loading="lazy"
+              fill
+              className="object-cover"
+              sizes="(max-width: 768px) 50vw, 33vw"
             />
           ) : (
-            <span className="px-4 text-center text-xs font-semibold text-navy">
+            <span className="flex h-full items-center justify-center px-4 text-center text-xs font-semibold text-navy">
               {afterLabel ?? "After photo coming soon"}
             </span>
           )}

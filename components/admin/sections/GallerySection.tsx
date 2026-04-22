@@ -157,11 +157,13 @@ export default function GallerySection() {
           <div key={item.id} className="grid gap-4 rounded-2xl border border-slate-200 p-4 sm:grid-cols-[180px_1fr_auto]">
             <div className="grid grid-cols-2 overflow-hidden rounded-xl border border-slate-200">
               {item.before_image_url ? (
+                // eslint-disable-next-line @next/next/no-img-element
                 <img src={item.before_image_url} alt={`${item.title} before`} className="h-24 w-full object-cover" />
               ) : (
                 <div className="flex h-24 items-center justify-center bg-slate-100 text-xs text-slate-500">No before</div>
               )}
               {item.after_image_url ? (
+                // eslint-disable-next-line @next/next/no-img-element
                 <img src={item.after_image_url} alt={`${item.title} after`} className="h-24 w-full object-cover" />
               ) : (
                 <div className="flex h-24 items-center justify-center bg-slate-100 text-xs text-slate-500">No after</div>

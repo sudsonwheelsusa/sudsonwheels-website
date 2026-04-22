@@ -10,7 +10,7 @@ export async function getPublicServices() {
     const supabase = await createClient();
     const { data, error } = await supabase
       .from("services")
-      .select("id, name, description, icon, sort_order, is_active")
+      .select("id, name, description, icon, image_path, sort_order, is_active")
       .eq("is_active", true)
       .order("sort_order", { ascending: true });
 
@@ -18,15 +18,24 @@ export async function getPublicServices() {
       return DEFAULT_SERVICE_SEED.map((service, index) => ({
         id: `fallback-service-${index + 1}`,
         ...service,
+        image_path: null,
+        image_url: null,
         is_active: true,
       })) satisfies ServiceRecord[];
     }
 
-    return data satisfies ServiceRecord[];
+    return data.map((s) => ({
+      ...s,
+      image_url: s.image_path
+        ? supabase.storage.from("gallery").getPublicUrl(s.image_path).data.publicUrl
+        : null,
+    })) satisfies ServiceRecord[];
   } catch {
     return DEFAULT_SERVICE_SEED.map((service, index) => ({
       id: `fallback-service-${index + 1}`,
       ...service,
+      image_path: null,
+      image_url: null,
       is_active: true,
     })) satisfies ServiceRecord[];
   }

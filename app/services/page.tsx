@@ -39,6 +39,7 @@ export default async function ServicesPage() {
               name={service.name}
               description={service.description}
               icon={service.icon}
+              imageUrl={service.image_url}
             />
           ))}
         </div>
