@@ -33,8 +33,16 @@ export default function AdminLoginForm() {
     const { error } = await supabase.auth.signInWithPassword({ email, password });
 
     if (error) {
+      const isRateLimited =
+        error.status === 429 ||
+        error.message.toLowerCase().includes("rate limit") ||
+        error.message.toLowerCase().includes("too many");
       setStatus("error");
-      setMessage(error.message);
+      setMessage(
+        isRateLimited
+          ? "Too many attempts. Try again later."
+          : "Invalid credentials."
+      );
       turnstileRef.current?.reset();
       setTurnstileToken("");
       return;
