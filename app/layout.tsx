@@ -3,9 +3,13 @@ import { Geist, Geist_Mono } from "next/font/google";
 import { Analytics } from "@vercel/analytics/next";
 import { SpeedInsights } from "@vercel/speed-insights/next";
 import "./globals.css";
-import Header from "@/components/layout/Header";
-import Footer from "@/components/layout/Footer";
 import { validateServerEnvironment } from "@/lib/supabase/config";
+import {
+  PHONE,
+  CONTACT_EMAIL,
+  SOCIAL_LINKS,
+  DEFAULT_SERVICE_AREA,
+} from "@/lib/constants/site";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -24,11 +28,33 @@ export const metadata: Metadata = {
   },
   description:
     "Professional mobile pressure washing serving Ashland and North Central Ohio. Houses, driveways, decks, gutters, and commercial fleet washing. Free quotes.",
+  metadataBase: new URL("https://sudsonwheelsusa.com"),
   openGraph: {
     siteName: "SudsOnWheels",
     locale: "en_US",
     type: "website",
   },
+};
+
+const jsonLd = {
+  "@context": "https://schema.org",
+  "@type": "LocalBusiness",
+  name: "SudsOnWheels",
+  url: "https://sudsonwheelsusa.com",
+  telephone: `+1${PHONE}`,
+  email: CONTACT_EMAIL,
+  address: {
+    "@type": "PostalAddress",
+    addressLocality: "Ashland",
+    addressRegion: "OH",
+    addressCountry: "US",
+  },
+  areaServed: DEFAULT_SERVICE_AREA.map((city) => ({
+    "@type": "City",
+    name: city,
+  })),
+  sameAs: SOCIAL_LINKS.map((link) => link.href),
+  priceRange: "$$",
 };
 
 export default function RootLayout({
@@ -39,9 +65,11 @@ export default function RootLayout({
   return (
     <html lang="en" className={`${geistSans.variable} ${geistMono.variable}`}>
       <body>
-        <Header />
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
+        />
         {children}
-        <Footer />
         <Analytics />
         <SpeedInsights />
       </body>
