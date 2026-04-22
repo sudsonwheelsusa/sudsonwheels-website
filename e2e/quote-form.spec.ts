@@ -20,6 +20,8 @@ function collectConsoleErrors(page: Page): () => string[] {
     "[Fast Refresh]",
     // Browser extension injections (e.g. password managers)
     "content-script",
+    // React dev mode uses eval() for error overlays — blocked by our CSP (expected in dev)
+    "eval() is not supported",
   ];
 
   page.on("console", (msg: ConsoleMessage) => {
@@ -96,7 +98,8 @@ test("shows success state after a valid submission (mocked API)", async ({ page 
   await page.locator('input[name="last_name"]').fill("User");
   await page.locator('input[name="phone"]').fill("4195550000");
   await page.locator('input[name="email"]').fill("test@example.com");
-  await page.locator('select[name="service"]').selectOption("Gutters");
+  await page.locator('select[name="service_id"]').selectOption({ index: 1 });
+  await page.locator('input[name="location_address"]').fill("123 Main St, Ashland, OH");
 
   // Wait for the mocked Turnstile callback to fire (200ms delay in mock + buffer)
   await page.waitForTimeout(500);
