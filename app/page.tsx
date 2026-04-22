@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import Image from "next/image";
 import Link from "next/link";
 import {
   DEFAULT_SERVICE_AREA,
@@ -15,6 +16,7 @@ export const metadata: Metadata = {
 
 export default async function HomePage() {
   const services = await getPublicServices();
+  const storageBase = `${process.env.NEXT_PUBLIC_SUPABASE_URL}/storage/v1/object/public/gallery`;
 
   return (
     <main>
@@ -47,10 +49,15 @@ export default async function HomePage() {
             </a>
           </div>
         </div>
-        <div className="flex min-h-[240px] items-center justify-center bg-slate-200">
-          <p className="px-8 text-center text-sm text-slate-400">
-            Photo coming soon
-          </p>
+        <div className="relative min-h-60">
+          <Image
+            src={`${storageBase}/photos/after-tractor-2.jpg`}
+            alt="Clean John Deere combine after pressure wash"
+            fill
+            className="object-cover"
+            priority
+            sizes="(max-width: 768px) 100vw, 50vw"
+          />
         </div>
       </section>
 
@@ -90,8 +97,14 @@ export default async function HomePage() {
             More about us →
           </Link>
         </div>
-        <div className="flex h-52 items-center justify-center rounded-xl bg-slate-200">
-          <p className="text-sm text-slate-400">Photo coming soon</p>
+        <div className="relative h-52 overflow-hidden rounded-xl">
+          <Image
+            src={`${storageBase}/photos/before-semi-red-1.jpg`}
+            alt="Fleet semi truck pressure wash job"
+            fill
+            className="object-cover"
+            sizes="(max-width: 768px) 100vw, 50vw"
+          />
         </div>
       </section>
 

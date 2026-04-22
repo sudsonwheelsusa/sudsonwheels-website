@@ -17,8 +17,23 @@ export interface GalleryRecord {
   after_image_path: string | null;
   before_image_url?: string | null;
   after_image_url?: string | null;
+  before_image_paths: string[];
+  after_image_paths: string[];
+  before_image_urls?: string[];
+  after_image_urls?: string[];
   before_label: string | null;
   after_label: string | null;
+  sort_order: number;
+  is_active: boolean;
+  created_at?: string;
+}
+
+export interface GalleryVideoRecord {
+  id: string;
+  title: string;
+  description: string;
+  video_path: string;
+  video_url?: string;
   sort_order: number;
   is_active: boolean;
   created_at?: string;

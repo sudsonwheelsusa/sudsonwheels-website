@@ -3,7 +3,7 @@ import {
   DEFAULT_GALLERY_SEED,
   DEFAULT_SERVICE_SEED,
 } from "@/lib/constants/site";
-import type { GalleryRecord, ServiceRecord } from "@/lib/types";
+import type { GalleryRecord, GalleryVideoRecord, ServiceRecord } from "@/lib/types";
 
 export async function getPublicServices() {
   try {
@@ -38,7 +38,7 @@ export async function getPublicGallery() {
     const { data, error } = await supabase
       .from("gallery_items")
       .select(
-        "id, title, location, detail, before_image_path, after_image_path, before_label, after_label, sort_order, is_active"
+        "id, title, location, detail, before_image_path, after_image_path, before_image_paths, after_image_paths, before_label, after_label, sort_order, is_active"
       )
       .eq("is_active", true)
       .order("sort_order", { ascending: true });
@@ -51,21 +51,44 @@ export async function getPublicGallery() {
         after_image_path: null,
         before_image_url: null,
         after_image_url: null,
+        before_image_paths: [],
+        after_image_paths: [],
+        before_image_urls: [],
+        after_image_urls: [],
         is_active: true,
       })) satisfies GalleryRecord[];
     }
 
-    return data.map((item) => ({
-      ...item,
-      before_image_url: item.before_image_path
-        ? supabase.storage.from("gallery").getPublicUrl(item.before_image_path)
-            .data.publicUrl
-        : null,
-      after_image_url: item.after_image_path
-        ? supabase.storage.from("gallery").getPublicUrl(item.after_image_path)
-            .data.publicUrl
-        : null,
-    })) satisfies GalleryRecord[];
+    return data.map((item) => {
+      const beforePaths: string[] = item.before_image_paths?.length
+        ? item.before_image_paths
+        : item.before_image_path
+          ? [item.before_image_path]
+          : [];
+      const afterPaths: string[] = item.after_image_paths?.length
+        ? item.after_image_paths
+        : item.after_image_path
+          ? [item.after_image_path]
+          : [];
+
+      return {
+        ...item,
+        before_image_paths: beforePaths,
+        after_image_paths: afterPaths,
+        before_image_url: beforePaths[0]
+          ? supabase.storage.from("gallery").getPublicUrl(beforePaths[0]).data.publicUrl
+          : null,
+        after_image_url: afterPaths[0]
+          ? supabase.storage.from("gallery").getPublicUrl(afterPaths[0]).data.publicUrl
+          : null,
+        before_image_urls: beforePaths.map(
+          (p) => supabase.storage.from("gallery").getPublicUrl(p).data.publicUrl
+        ),
+        after_image_urls: afterPaths.map(
+          (p) => supabase.storage.from("gallery").getPublicUrl(p).data.publicUrl
+        ),
+      };
+    }) satisfies GalleryRecord[];
   } catch {
     return DEFAULT_GALLERY_SEED.map((item, index) => ({
       id: `fallback-gallery-${index + 1}`,
@@ -74,7 +97,31 @@ export async function getPublicGallery() {
       after_image_path: null,
       before_image_url: null,
       after_image_url: null,
+      before_image_paths: [],
+      after_image_paths: [],
+      before_image_urls: [],
+      after_image_urls: [],
       is_active: true,
     })) satisfies GalleryRecord[];
+  }
+}
+
+export async function getPublicGalleryVideos() {
+  try {
+    const supabase = await createClient();
+    const { data, error } = await supabase
+      .from("gallery_videos")
+      .select("id, title, description, video_path, sort_order, is_active")
+      .eq("is_active", true)
+      .order("sort_order", { ascending: true });
+
+    if (error || !data?.length) return [] satisfies GalleryVideoRecord[];
+
+    return data.map((v) => ({
+      ...v,
+      video_url: supabase.storage.from("gallery").getPublicUrl(v.video_path).data.publicUrl,
+    })) satisfies GalleryVideoRecord[];
+  } catch {
+    return [] satisfies GalleryVideoRecord[];
   }
 }
