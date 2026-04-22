@@ -16,7 +16,7 @@ export async function getPublicServices() {
 
     if (error || !data?.length) {
       return DEFAULT_SERVICE_SEED.map((service, index) => ({
-        id: `fallback-service-${index + 1}`,
+        id: `00000000-0000-0000-0000-00000000000${index + 1}`,
         ...service,
         image_path: null,
         image_url: null,
@@ -32,7 +32,7 @@ export async function getPublicServices() {
     })) satisfies ServiceRecord[];
   } catch {
     return DEFAULT_SERVICE_SEED.map((service, index) => ({
-      id: `fallback-service-${index + 1}`,
+      id: `00000000-0000-0000-0000-00000000000${index + 1}`,
       ...service,
       image_path: null,
       image_url: null,
