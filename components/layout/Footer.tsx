@@ -47,8 +47,8 @@ export default function Footer() {
             Mobile pressure washing for Ashland and North Central Ohio.
           </h2>
           <p className="max-w-md text-sm leading-relaxed text-white/60">
-            Fast quotes, real before-and-after results, and an admin workflow that
-            keeps every lead organized from first form submission to scheduled job.
+            Licensed, insured, and based in Ashland, OH. Serving residential and
+            commercial customers across North Central Ohio.
           </p>
         </div>
 
@@ -99,10 +99,6 @@ export default function Footer() {
         <div className="mx-auto flex max-w-6xl flex-col gap-2 px-6 py-4 text-center text-xs sm:flex-row sm:items-center sm:justify-between sm:text-left">
           <span className="text-white/50">
             &copy; {new Date().getFullYear()} SudsOnWheels
-          </span>
-          <span className="text-white/30">
-            Quotes, estimates, gallery, and scheduling managed securely through
-            Supabase.
           </span>
         </div>
       </div>
