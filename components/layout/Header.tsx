@@ -8,11 +8,11 @@ export default function Header() {
       <div className="relative max-w-6xl mx-auto px-6 h-16 flex items-center justify-between">
         <Link href="/" className="flex items-center gap-2.5">
           <Image
-            src="/logo.png"
+            src="/Logo.jpeg"
             alt="SudsOnWheels"
-            width={40}
-            height={40}
-            className="object-contain"
+            width={44}
+            height={44}
+            className="object-contain rounded-full bg-white p-0.5"
             priority
           />
           <span className="text-xl font-black text-white tracking-tight">

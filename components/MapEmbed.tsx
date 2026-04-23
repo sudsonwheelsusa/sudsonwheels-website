@@ -52,7 +52,7 @@ export default function MapEmbed({ size = "md", zoom = 11 }: MapEmbedProps) {
   }, []);
 
   const { isLoaded, loadError } = useJsApiLoader({
-    googleMapsApiKey: inView ? (process.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY ?? "") : "",
+    googleMapsApiKey: process.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY ?? "",
     id: "sow-google-map-script",
   });
 

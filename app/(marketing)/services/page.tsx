@@ -5,7 +5,7 @@ import { ServiceIcon } from "@/lib/service-icons";
 import PageHeader from "@/components/PageHeader";
 import ScrollReveal from "@/components/ScrollReveal";
 import { getPublicServices } from "@/lib/site-data";
-import { PHONE, PHONE_DISPLAY } from "@/lib/constants/site";
+import { CONTACT_EMAIL } from "@/lib/constants/site";
 
 export const metadata: Metadata = {
   title: "Services",
@@ -120,10 +120,10 @@ export default async function ServicesPage() {
                 Get a Free Quote
               </Link>
               <a
-                href={`tel:${PHONE}`}
+                href={`mailto:${CONTACT_EMAIL}`}
                 className="rounded-lg border border-white/30 px-6 py-3 text-sm font-semibold text-white transition-colors hover:bg-white/10"
               >
-                {PHONE_DISPLAY}
+                Email Us
               </a>
             </div>
           </div>

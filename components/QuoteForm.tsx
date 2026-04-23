@@ -123,35 +123,19 @@ export default function QuoteForm({ serviceOptions }: QuoteFormProps) {
         </div>
       </div>
 
-      <div className="grid grid-cols-2 gap-3">
-        <div>
-          <label className="mb-1 block text-xs font-semibold text-gray-600">
-            Phone
-          </label>
-          <input
-            {...register("phone")}
-            type="tel"
-            placeholder="(330) 927-0080"
-            className="w-full rounded-md border border-gray-200 bg-gray-50 px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-navy/30"
-          />
-          {errors.phone ? (
-            <p className="mt-1 text-xs text-brand-red">{errors.phone.message}</p>
-          ) : null}
-        </div>
-        <div>
-          <label className="mb-1 block text-xs font-semibold text-gray-600">
-            Email
-          </label>
-          <input
-            {...register("email")}
-            type="email"
-            placeholder="jane@email.com"
-            className="w-full rounded-md border border-gray-200 bg-gray-50 px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-navy/30"
-          />
-          {errors.email ? (
-            <p className="mt-1 text-xs text-brand-red">{errors.email.message}</p>
-          ) : null}
-        </div>
+      <div>
+        <label className="mb-1 block text-xs font-semibold text-gray-600">
+          Email
+        </label>
+        <input
+          {...register("email")}
+          type="email"
+          placeholder="jane@email.com"
+          className="w-full rounded-md border border-gray-200 bg-gray-50 px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-navy/30"
+        />
+        {errors.email ? (
+          <p className="mt-1 text-xs text-brand-red">{errors.email.message}</p>
+        ) : null}
       </div>
 
       <div>

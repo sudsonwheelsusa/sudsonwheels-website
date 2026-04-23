@@ -45,7 +45,7 @@ export interface LeadRecord {
   id: string;
   first_name: string;
   last_name: string;
-  phone: string;
+  phone?: string | null;
   email: string;
   service_id: string | null;
   service_name: string;

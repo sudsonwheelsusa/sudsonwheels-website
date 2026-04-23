@@ -1,8 +1,7 @@
+import Image from "next/image";
 import Link from "next/link";
 import {
   CONTACT_EMAIL,
-  PHONE,
-  PHONE_DISPLAY,
   SOCIAL_LINKS,
 } from "@/lib/constants/site";
 
@@ -63,13 +62,22 @@ export default function Footer() {
 
         {/* Brand column */}
         <div className="space-y-4">
-          <div>
-            <p className="text-lg font-black tracking-tight">
-              Suds<span className="text-brand-red">On</span>Wheels
-            </p>
-            <p className="mt-1 text-xs font-bold uppercase tracking-widest text-brand-red">
-              Ashland, Ohio
-            </p>
+          <div className="flex items-center gap-3">
+            <Image
+              src="/Logo.jpeg"
+              alt="SudsOnWheels"
+              width={56}
+              height={56}
+              className="object-contain rounded-full bg-white p-0.5"
+            />
+            <div>
+              <p className="text-lg font-black tracking-tight">
+                Suds<span className="text-brand-red">On</span>Wheels
+              </p>
+              <p className="text-xs font-bold uppercase tracking-widest text-brand-red">
+                Ashland, Ohio
+              </p>
+            </div>
           </div>
           <p className="text-sm leading-relaxed text-white/60 max-w-xs">
             Family-owned mobile pressure washing for residential and commercial
@@ -77,13 +85,13 @@ export default function Footer() {
             equipment to you.
           </p>
           <a
-            href={`tel:${PHONE}`}
+            href={`mailto:${CONTACT_EMAIL}`}
             className="inline-flex items-center gap-2 bg-brand-red text-white text-sm font-bold px-4 py-2.5 rounded-lg hover:bg-brand-red/90 transition-colors"
           >
             <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 24 24">
-              <path d="M6.6 10.8c1.4 2.8 3.8 5.1 6.6 6.6l2.2-2.2c.3-.3.7-.4 1-.2 1.1.4 2.3.6 3.6.6.6 0 1 .4 1 1V20c0 .6-.4 1-1 1-9.4 0-17-7.6-17-17 0-.6.4-1 1-1h3.5c.6 0 1 .4 1 1 0 1.3.2 2.5.6 3.6.1.3 0 .7-.2 1L6.6 10.8z"/>
+              <path d="M20 4H4c-1.1 0-2 .9-2 2v12c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V6c0-1.1-.9-2-2-2zm0 4l-8 5-8-5V6l8 5 8-5v2z"/>
             </svg>
-            {PHONE_DISPLAY}
+            Email Us
           </a>
           <div className="flex gap-2 pt-1">
             {SOCIAL_LINKS.map((link) => {
