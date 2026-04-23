@@ -1,7 +1,6 @@
 @import "tailwindcss";
 @import "tw-animate-css";
 @import "shadcn/tailwind.css";
-@import "leaflet/dist/leaflet.css";
 
 @custom-variant dark (&:is(.dark *));
 
@@ -137,6 +136,69 @@
 @keyframes gallery-fade {
   from { opacity: 0; transform: scale(1.01); }
   to   { opacity: 1; transform: scale(1); }
+}
+
+@keyframes hero-fade-up {
+  from { opacity: 0; transform: translateY(22px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes hero-fade-in {
+  from { opacity: 0; }
+  to   { opacity: 1; }
+}
+
+.hero-eyebrow  { animation: hero-fade-up 0.6s 0.05s cubic-bezier(.4,0,.2,1) both; }
+.hero-title    { animation: hero-fade-up 0.6s 0.15s cubic-bezier(.4,0,.2,1) both; }
+.hero-sub      { animation: hero-fade-up 0.6s 0.25s cubic-bezier(.4,0,.2,1) both; }
+.hero-btns     { animation: hero-fade-up 0.6s 0.35s cubic-bezier(.4,0,.2,1) both; }
+.hero-trust    { animation: hero-fade-up 0.6s 0.45s cubic-bezier(.4,0,.2,1) both; }
+.hero-img      { animation: hero-fade-in 0.9s 0.1s cubic-bezier(.4,0,.2,1) both; }
+
+/* Page arch header */
+.page-header-arch {
+  position: relative;
+  overflow: hidden;
+}
+.page-header-arch::after {
+  content: '';
+  position: absolute;
+  bottom: -2px;
+  left: 0;
+  right: 0;
+  height: 48px;
+  background: #FAF6F0;
+  clip-path: ellipse(55% 100% at 50% 100%);
+}
+
+/* Scroll reveal */
+.reveal {
+  opacity: 0;
+  transform: translateY(28px);
+  transition: opacity 0.6s cubic-bezier(.4,0,.2,1), transform 0.6s cubic-bezier(.4,0,.2,1);
+}
+.reveal.visible {
+  opacity: 1;
+  transform: translateY(0);
+}
+.reveal-delay-1 { transition-delay: 0.08s; }
+.reveal-delay-2 { transition-delay: 0.16s; }
+.reveal-delay-3 { transition-delay: 0.24s; }
+.reveal-delay-4 { transition-delay: 0.32s; }
+
+
+.hero-copy-bg {
+  background-image:
+    repeating-linear-gradient(0deg, transparent, transparent 30px, rgba(255,255,255,.015) 30px, rgba(255,255,255,.015) 31px),
+    repeating-linear-gradient(90deg, transparent, transparent 30px, rgba(255,255,255,.015) 30px, rgba(255,255,255,.015) 31px);
+}
+
+.testi-card-animate {
+  animation: hero-fade-up 0.4s cubic-bezier(.4,0,.2,1) both;
+}
+
+.hero-img-overlay {
+  background: linear-gradient(90deg, #1D3557 0%, rgba(29,53,87,0.4) 30%, transparent 65%);
 }
 
 .location-pin-wrapper {

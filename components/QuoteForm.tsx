@@ -2,10 +2,10 @@
 
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Turnstile, type TurnstileInstance } from "@marsidev/react-turnstile";
-import type { LatLngLiteral } from "leaflet";
 import { useRef, useState } from "react";
 import { useForm } from "react-hook-form";
 import LocationPicker from "@/components/LocationPicker";
+import type { LatLng } from "@/components/LocationPickerMap";
 import { leadSchema, type LeadInput } from "@/lib/schemas/lead";
 
 interface QuoteFormProps {
@@ -21,7 +21,7 @@ export default function QuoteForm({ serviceOptions }: QuoteFormProps) {
   );
   const [errorMsg, setErrorMsg] = useState("");
   const [turnstileError, setTurnstileError] = useState(false);
-  const [selectedLocation, setSelectedLocation] = useState<LatLngLiteral | null>(
+  const [selectedLocation, setSelectedLocation] = useState<LatLng | null>(
     null
   );
   const turnstileRef = useRef<TurnstileInstance>(null);
@@ -66,7 +66,7 @@ export default function QuoteForm({ serviceOptions }: QuoteFormProps) {
     }
   }
 
-  function handleLocationChange(value: LatLngLiteral | null) {
+  function handleLocationChange(value: LatLng | null) {
     setSelectedLocation(value);
     setValue("location_lat", value?.lat, { shouldValidate: true });
     setValue("location_lng", value?.lng, { shouldValidate: true });
