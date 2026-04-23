@@ -2,7 +2,7 @@
 
 import dynamic from "next/dynamic";
 import { useState } from "react";
-import type { LatLngLiteral } from "leaflet";
+import type { LatLng } from "@/components/LocationPickerMap";
 import { Button } from "@/components/ui/button";
 
 const LocationPickerMap = dynamic(() => import("./LocationPickerMap"), {
@@ -14,12 +14,14 @@ const LocationPickerMap = dynamic(() => import("./LocationPickerMap"), {
   ),
 });
 
+export type { LatLng };
+
 export default function LocationPicker({
   value,
   onChange,
 }: {
-  value: LatLngLiteral | null;
-  onChange: (value: LatLngLiteral | null) => void;
+  value: LatLng | null;
+  onChange: (value: LatLng | null) => void;
 }) {
   const [geoStatus, setGeoStatus] = useState("");
 
@@ -33,19 +35,13 @@ export default function LocationPicker({
 
     navigator.geolocation.getCurrentPosition(
       (position) => {
-        onChange({
-          lat: position.coords.latitude,
-          lng: position.coords.longitude,
-        });
+        onChange({ lat: position.coords.latitude, lng: position.coords.longitude });
         setGeoStatus("Current location added.");
       },
       () => {
         setGeoStatus("We couldn't access your current location.");
       },
-      {
-        enableHighAccuracy: true,
-        timeout: 10000,
-      }
+      { enableHighAccuracy: true, timeout: 10000 }
     );
   }
 
@@ -58,20 +54,10 @@ export default function LocationPicker({
       </div>
 
       <div className="flex flex-wrap items-center gap-2">
-        <Button
-          type="button"
-          variant="outline"
-          size="sm"
-          onClick={useCurrentLocation}
-        >
+        <Button type="button" variant="outline" size="sm" onClick={useCurrentLocation}>
           Use current location
         </Button>
-        <Button
-          type="button"
-          variant="ghost"
-          size="sm"
-          onClick={() => onChange(null)}
-        >
+        <Button type="button" variant="ghost" size="sm" onClick={() => onChange(null)}>
           Clear pin
         </Button>
         {value ? (

@@ -1,3 +1,4 @@
+import Link from "next/link";
 import {
   CONTACT_EMAIL,
   PHONE,
@@ -35,47 +36,56 @@ const SOCIAL_ICONS: Record<string, React.ComponentType<{ className?: string }>> 
   TikTok: TikTokIcon,
 };
 
+const SERVICE_LINKS = [
+  "House & Siding",
+  "Driveways & Concrete",
+  "Decks & Fences",
+  "Gutters",
+  "Fleet Washing",
+  "Roof Soft Wash",
+];
+
+const SERVICE_AREA = [
+  "Ashland, OH",
+  "Mansfield, OH",
+  "Wooster, OH",
+  "Loudonville, OH",
+  "Medina, OH",
+  "Ontario, OH",
+  "Millersburg, OH",
+  "Shelby, OH",
+];
+
 export default function Footer() {
   return (
-    <footer className="bg-navy text-white">
-      <div className="mx-auto grid max-w-6xl gap-10 px-6 py-12 md:grid-cols-[1.5fr_1fr_1fr]">
-        <div className="space-y-3">
-          <p className="text-sm font-black uppercase tracking-[0.16em] text-brand-red">
-            SudsOnWheels
-          </p>
-          <h2 className="max-w-sm text-2xl font-black text-offwhite">
-            Mobile pressure washing for Ashland and North Central Ohio.
-          </h2>
-          <p className="max-w-md text-sm leading-relaxed text-white/60">
-            Licensed, insured, and based in Ashland, OH. Serving residential and
-            commercial customers across North Central Ohio.
-          </p>
-        </div>
+    <footer className="bg-[#142540] text-white">
+      <div className="mx-auto max-w-6xl px-6 py-14 grid gap-10 md:grid-cols-[1.8fr_1fr_1fr_1fr]">
 
-        <div className="space-y-3 text-sm">
-          <p className="font-semibold uppercase tracking-[0.14em] text-white/50">
-            Contact
+        {/* Brand column */}
+        <div className="space-y-4">
+          <div>
+            <p className="text-lg font-black tracking-tight">
+              Suds<span className="text-brand-red">On</span>Wheels
+            </p>
+            <p className="mt-1 text-xs font-bold uppercase tracking-widest text-brand-red">
+              Ashland, Ohio
+            </p>
+          </div>
+          <p className="text-sm leading-relaxed text-white/60 max-w-xs">
+            Family-owned mobile pressure washing for residential and commercial
+            customers across Ashland County and North Central Ohio. We bring the
+            equipment to you.
           </p>
           <a
             href={`tel:${PHONE}`}
-            className="block transition-colors hover:text-brand-red"
+            className="inline-flex items-center gap-2 bg-brand-red text-white text-sm font-bold px-4 py-2.5 rounded-lg hover:bg-brand-red/90 transition-colors"
           >
+            <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 24 24">
+              <path d="M6.6 10.8c1.4 2.8 3.8 5.1 6.6 6.6l2.2-2.2c.3-.3.7-.4 1-.2 1.1.4 2.3.6 3.6.6.6 0 1 .4 1 1V20c0 .6-.4 1-1 1-9.4 0-17-7.6-17-17 0-.6.4-1 1-1h3.5c.6 0 1 .4 1 1 0 1.3.2 2.5.6 3.6.1.3 0 .7-.2 1L6.6 10.8z"/>
+            </svg>
             {PHONE_DISPLAY}
           </a>
-          <a
-            href={`mailto:${CONTACT_EMAIL}`}
-            className="block break-all transition-colors hover:text-brand-red"
-          >
-            {CONTACT_EMAIL}
-          </a>
-          <p className="text-white/50">Serving Ashland &amp; North Central Ohio</p>
-        </div>
-
-        <div className="space-y-3 text-sm">
-          <p className="font-semibold uppercase tracking-[0.14em] text-white/50">
-            Follow Along
-          </p>
-          <div className="flex gap-3 pt-1">
+          <div className="flex gap-2 pt-1">
             {SOCIAL_LINKS.map((link) => {
               const Icon = SOCIAL_ICONS[link.label];
               return (
@@ -85,21 +95,86 @@ export default function Footer() {
                   target="_blank"
                   rel="noreferrer"
                   aria-label={link.label}
-                  className="flex h-9 w-9 items-center justify-center rounded-full bg-white/10 transition-colors hover:bg-brand-red"
+                  className="flex h-8 w-8 items-center justify-center rounded-lg bg-white/10 transition-colors hover:bg-brand-red"
                 >
-                  {Icon && <Icon className="h-4 w-4" />}
+                  {Icon && <Icon className="h-3.5 w-3.5" />}
                 </a>
               );
             })}
           </div>
         </div>
+
+        {/* Services column */}
+        <div>
+          <p className="text-xs font-bold uppercase tracking-widest text-white/40 mb-4">
+            Services
+          </p>
+          <ul className="space-y-2.5">
+            {SERVICE_LINKS.map((name) => (
+              <li key={name}>
+                <Link
+                  href="/services"
+                  className="text-sm text-white/60 hover:text-white transition-colors"
+                >
+                  {name}
+                </Link>
+              </li>
+            ))}
+          </ul>
+        </div>
+
+        {/* Company column */}
+        <div>
+          <p className="text-xs font-bold uppercase tracking-widest text-white/40 mb-4">
+            Company
+          </p>
+          <ul className="space-y-2.5">
+            {[
+              { href: "/", label: "Home" },
+              { href: "/about", label: "About Us" },
+              { href: "/gallery", label: "Gallery" },
+              { href: "/contact", label: "Get a Quote" },
+            ].map(({ href, label }) => (
+              <li key={href}>
+                <Link
+                  href={href}
+                  className="text-sm text-white/60 hover:text-white transition-colors"
+                >
+                  {label}
+                </Link>
+              </li>
+            ))}
+            <li>
+              <a
+                href={`mailto:${CONTACT_EMAIL}`}
+                className="text-sm text-white/60 hover:text-white transition-colors break-all"
+              >
+                Email Us
+              </a>
+            </li>
+          </ul>
+        </div>
+
+        {/* Service area column */}
+        <div>
+          <p className="text-xs font-bold uppercase tracking-widest text-white/40 mb-4">
+            Service Area
+          </p>
+          <ul className="space-y-2.5">
+            {SERVICE_AREA.map((city) => (
+              <li key={city} className="text-sm text-white/60">
+                {city}
+              </li>
+            ))}
+          </ul>
+        </div>
       </div>
 
+      {/* Bottom bar */}
       <div className="border-t border-white/10">
-        <div className="mx-auto flex max-w-6xl flex-col gap-2 px-6 py-4 text-center text-xs sm:flex-row sm:items-center sm:justify-between sm:text-left">
-          <span className="text-white/50">
-            &copy; {new Date().getFullYear()} SudsOnWheels
-          </span>
+        <div className="mx-auto max-w-6xl px-6 py-4 flex flex-col gap-1.5 sm:flex-row sm:items-center sm:justify-between text-xs text-white/35">
+          <span>&copy; {new Date().getFullYear()} SudsOnWheels — Ashland, Ohio. All rights reserved.</span>
+          <span>Contracted partners: Valley Transportation (Ashland) · Scott&apos;s Industry (Wooster)</span>
         </div>
       </div>
     </footer>

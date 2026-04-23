@@ -2,12 +2,12 @@ import type { NextConfig } from "next";
 
 const CSP = [
   "default-src 'self'",
-  "script-src 'self' 'unsafe-inline' https://challenges.cloudflare.com",
-  "style-src 'self' 'unsafe-inline'",
-  "connect-src 'self' https://*.supabase.co wss://*.supabase.co https://challenges.cloudflare.com https://vitals.vercel-insights.com https://va.vercel-scripts.com",
+  "script-src 'self' 'unsafe-inline' https://challenges.cloudflare.com https://maps.googleapis.com https://maps.gstatic.com",
+  "style-src 'self' 'unsafe-inline' https://fonts.googleapis.com",
+  "connect-src 'self' https://*.supabase.co wss://*.supabase.co https://challenges.cloudflare.com https://vitals.vercel-insights.com https://va.vercel-scripts.com https://maps.googleapis.com https://maps.gstatic.com",
   "frame-src https://challenges.cloudflare.com",
-  "img-src 'self' data: blob: https://*.supabase.co https://*.tile.openstreetmap.org",
-  "font-src 'self'",
+  "img-src 'self' data: blob: https://*.supabase.co https://*.tile.openstreetmap.org https://maps.googleapis.com https://maps.gstatic.com https://*.ggpht.com https://streetviewpixels-pa.googleapis.com",
+  "font-src 'self' https://fonts.gstatic.com",
   "object-src 'none'",
   "base-uri 'self'",
   "frame-ancestors 'none'",
