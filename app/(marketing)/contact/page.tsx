@@ -111,7 +111,7 @@ export default async function ContactPage() {
           </div>
 
           {/* Right — form */}
-          <div className="reveal reveal-delay-2 rounded-2xl border border-gray-100 bg-white p-8 shadow-md">
+          <div className="reveal reveal-delay-2 rounded-2xl border border-gray-100 bg-white p-5 sm:p-8 shadow-md">
             <h3 className="mb-6 text-xl font-black text-navy">Request a Free Quote</h3>
             <QuoteForm
               serviceOptions={services.map((s) => ({ id: s.id, name: s.name }))}

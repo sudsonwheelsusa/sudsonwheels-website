@@ -207,7 +207,7 @@ export default function QuoteForm({ serviceOptions }: QuoteFormProps) {
       />
       {turnstileError ? (
         <p className="text-xs text-brand-red">
-          Bot verification failed to load. Try disabling tracking protection or use a different browser.
+          Security check failed to load. Try refreshing the page or switching to a different browser.
         </p>
       ) : errors.turnstile_token ? (
         <p className="text-xs text-brand-red">{errors.turnstile_token.message}</p>

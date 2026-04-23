@@ -179,7 +179,7 @@
 }
 .reveal.visible {
   opacity: 1;
-  transform: translateY(0);
+  transform: none;
 }
 .reveal-delay-1 { transition-delay: 0.08s; }
 .reveal-delay-2 { transition-delay: 0.16s; }
@@ -198,7 +198,12 @@
 }
 
 .hero-img-overlay {
-  background: linear-gradient(90deg, #1D3557 0%, rgba(29,53,87,0.4) 30%, transparent 65%);
+  background: linear-gradient(180deg, #1D3557 0%, rgba(29,53,87,0.5) 25%, transparent 60%);
+}
+@media (min-width: 768px) {
+  .hero-img-overlay {
+    background: linear-gradient(90deg, #1D3557 0%, rgba(29,53,87,0.4) 30%, transparent 65%);
+  }
 }
 
 .location-pin-wrapper {

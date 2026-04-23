@@ -58,7 +58,7 @@ const SERVICE_AREA = [
 export default function Footer() {
   return (
     <footer className="bg-[#142540] text-white">
-      <div className="mx-auto max-w-6xl px-6 py-14 grid gap-10 md:grid-cols-[1.8fr_1fr_1fr_1fr]">
+      <div className="mx-auto max-w-6xl px-6 py-14 grid gap-8 sm:grid-cols-2 md:grid-cols-[1.8fr_1fr_1fr_1fr] md:gap-10">
 
         {/* Brand column */}
         <div className="space-y-4">
