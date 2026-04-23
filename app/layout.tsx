@@ -5,7 +5,6 @@ import { SpeedInsights } from "@vercel/speed-insights/next";
 import "./globals.css";
 import { validateServerEnvironment } from "@/lib/supabase/config";
 import {
-  PHONE,
   CONTACT_EMAIL,
   SOCIAL_LINKS,
   DEFAULT_SERVICE_AREA,
@@ -29,6 +28,10 @@ export const metadata: Metadata = {
   description:
     "Professional mobile pressure washing serving Ashland and North Central Ohio. Houses, driveways, decks, gutters, and commercial fleet washing. Free quotes.",
   metadataBase: new URL("https://sudsonwheelsusa.com"),
+  icons: {
+    icon: "/Logo.jpeg",
+    apple: "/Logo.jpeg",
+  },
   openGraph: {
     siteName: "SudsOnWheels",
     locale: "en_US",
@@ -41,7 +44,6 @@ const jsonLd = {
   "@type": "LocalBusiness",
   name: "SudsOnWheels",
   url: "https://sudsonwheelsusa.com",
-  telephone: `+1${PHONE}`,
   email: CONTACT_EMAIL,
   address: {
     "@type": "PostalAddress",

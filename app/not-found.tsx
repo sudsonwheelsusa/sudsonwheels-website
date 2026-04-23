@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { PHONE, PHONE_DISPLAY } from "@/lib/constants/site";
+import { CONTACT_EMAIL } from "@/lib/constants/site";
 
 export default function NotFound() {
   return (
@@ -11,7 +11,7 @@ export default function NotFound() {
         Nothing to wash here.
       </h1>
       <p className="mb-10 max-w-sm text-base leading-relaxed text-blue-200/70">
-        That page doesn&apos;t exist. Head back home or give us a call — we&apos;re easy to reach.
+        That page doesn&apos;t exist. Head back home or shoot us an email — we&apos;re easy to reach.
       </p>
       <div className="flex flex-wrap justify-center gap-3">
         <Link
@@ -21,10 +21,10 @@ export default function NotFound() {
           Back to Home
         </Link>
         <a
-          href={`tel:${PHONE}`}
+          href={`mailto:${CONTACT_EMAIL}`}
           className="rounded-md border border-white/40 px-5 py-3 text-sm font-semibold text-offwhite transition-colors hover:bg-white/10"
         >
-          Call {PHONE_DISPLAY}
+          Email Us
         </a>
       </div>
     </main>

@@ -1,5 +1,3 @@
-export const PHONE = "3309270080";
-export const PHONE_DISPLAY = "(330) 927-0080";
 export const CONTACT_EMAIL = "contact@sudsonwheelsusa.com";
 export const BASE_CITY = "Ashland, OH";
 export const MAP_DEFAULT_CENTER = {
