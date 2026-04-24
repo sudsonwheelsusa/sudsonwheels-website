@@ -136,7 +136,7 @@ export async function POST(
         created_by: adminIdentity.userId,
       })
       .select(
-        "id, lead_id, estimate_id, title, status, scheduled_start, scheduled_end, service_name, customer_name, location_address, location_lat, location_lng, notes, created_by, created_at"
+        "id, lead_id, estimate_id, title, status, scheduled_start, scheduled_end, service_name, customer_name, location_address, location_lat, location_lng, notes, created_by, created_at, gcal_event_id, gcal_synced_at"
       )
       .single();
 
