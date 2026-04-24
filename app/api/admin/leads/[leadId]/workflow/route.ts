@@ -1,36 +1,11 @@
 import { NextRequest, NextResponse } from "next/server";
 import { createAdminClient } from "@/lib/supabase/admin";
-import { createClient } from "@/lib/supabase/server";
+import { requireAdmin } from "@/lib/auth/admin";
 import { adminLeadWorkflowSchema } from "@/lib/schemas/admin-workflow";
 import { sendQuoteEmail, sendScheduledJobEmail } from "@/lib/email/send";
 import { generateJobIcs } from "@/lib/ics";
-import type { JobRecord, LeadRecord } from "@/lib/types";
-
-async function requireAdminIdentity() {
-  const supabase = await createClient();
-  const { data, error } = await supabase.auth.getClaims();
-
-  if (error) {
-    return null;
-  }
-
-  const userId = typeof data?.claims?.sub === "string" ? data.claims.sub : null;
-  if (!userId) {
-    return null;
-  }
-
-  const { data: profile, error: profileError } = await supabase
-    .from("profiles")
-    .select("role")
-    .eq("id", userId)
-    .maybeSingle();
-
-  if (profileError || profile?.role !== "admin") {
-    return null;
-  }
-
-  return { userId };
-}
+import { getValidTokens, createCalendarEvent } from "@/lib/google/calendar";
+import type { JobRecord, LeadRecord, GoogleTokens } from "@/lib/types";
 
 const leadSelect =
   "id, first_name, last_name, phone, email, service_id, service_name, location_address, location_lat, location_lng, message, status, internal_notes, quoted_amount, estimate_sent_at, approved_at, rejected_at, scheduled_job_id, completed_at, created_at";
@@ -39,10 +14,7 @@ export async function POST(
   request: NextRequest,
   context: { params: Promise<{ leadId: string }> }
 ) {
-  const adminIdentity = await requireAdminIdentity();
-  if (!adminIdentity) {
-    return NextResponse.json({ error: "Unauthorized." }, { status: 401 });
-  }
+  const adminIdentity = await requireAdmin();
 
   const { leadId } = await context.params;
 
@@ -188,6 +160,61 @@ export async function POST(
     }).catch((error) => {
       console.error("Scheduled job email failure:", error);
     });
+
+    // Fire-and-forget: sync the new job to Google Calendar
+    void (async () => {
+      try {
+        const { data: profile } = await supabase
+          .from("profiles")
+          .select("google_tokens, google_calendar_id")
+          .eq("id", adminIdentity.userId)
+          .single();
+
+        if (!profile?.google_tokens) return;
+
+        const tokens = profile.google_tokens as GoogleTokens;
+        const validTokens = await getValidTokens(tokens);
+        const calendarId = (profile.google_calendar_id as string | null) ?? "primary";
+
+        const event = await createCalendarEvent(validTokens, calendarId, {
+          summary: jobRecord!.title,
+          description: [
+            `Customer: ${jobRecord!.customer_name}`,
+            jobRecord!.location_address ? `Address: ${jobRecord!.location_address}` : null,
+            jobRecord!.notes ? `Notes: ${jobRecord!.notes}` : null,
+          ]
+            .filter(Boolean)
+            .join("\n"),
+          location: jobRecord!.location_address ?? undefined,
+          start: {
+            dateTime: jobRecord!.scheduled_start,
+            timeZone: "America/New_York",
+          },
+          end: {
+            dateTime: jobRecord!.scheduled_end ?? jobRecord!.scheduled_start,
+            timeZone: "America/New_York",
+          },
+        });
+
+        // Store the Google Calendar event ID on the job + update tokens if refreshed
+        await supabase
+          .from("jobs")
+          .update({
+            gcal_event_id: event.id,
+            gcal_synced_at: new Date().toISOString(),
+          })
+          .eq("id", jobRecord!.id);
+
+        if (validTokens.access_token !== tokens.access_token) {
+          await supabase
+            .from("profiles")
+            .update({ google_tokens: validTokens })
+            .eq("id", adminIdentity.userId);
+        }
+      } catch (err) {
+        console.error("Google Calendar sync failed:", err);
+      }
+    })();
   }
 
   return NextResponse.json({

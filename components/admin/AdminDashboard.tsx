@@ -174,7 +174,11 @@ export default function AdminDashboard({
         <main className="flex-1 overflow-auto bg-offwhite p-4 sm:p-6 md:p-8">
           {section === "overview" && <OverviewSection />}
           {section === "leads" && <LeadsPipeline />}
-          {section === "calendar" && <CalendarSection />}
+          {section === "calendar" && (
+            <Suspense>
+              <CalendarSection />
+            </Suspense>
+          )}
           {section === "services" && <ServicesSection />}
           {section === "gallery" && <GallerySection />}
           {section === "settings" && <SettingsSection />}
