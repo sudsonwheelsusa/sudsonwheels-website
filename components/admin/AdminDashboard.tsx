@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import { createClient } from "@/lib/supabase/browser";
 import OverviewSection from "./sections/OverviewSection";
@@ -68,6 +68,15 @@ export default function AdminDashboard({
 }) {
   const router = useRouter();
   const [section, setSection] = useState<Section>("overview");
+
+  useEffect(() => {
+    function handleNav(e: Event) {
+      const detail = (e as CustomEvent<string>).detail as Section;
+      setSection(detail);
+    }
+    window.addEventListener("admin-navigate", handleNav);
+    return () => window.removeEventListener("admin-navigate", handleNav);
+  }, []);
 
   async function handleSignOut() {
     const supabase = createClient();
