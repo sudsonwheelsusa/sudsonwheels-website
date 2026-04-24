@@ -45,11 +45,18 @@ export default function CalendarSection() {
 
   const gridDays = getMonthGrid(currentMonth);
 
+  const today = new Date();
+  const isToday = (day: Date) =>
+    day.getFullYear() === today.getFullYear() &&
+    day.getMonth() === today.getMonth() &&
+    day.getDate() === today.getDate();
+
   return (
     <div className="space-y-6">
       <div>
-        <h2 className="text-2xl font-black text-navy">Job Calendar</h2>
-        <p className="text-sm text-slate-500 mt-1">Approved jobs appear here once scheduled.</p>
+        <p className="text-[9px] font-bold uppercase tracking-[0.2em] text-brand-red mb-1">Admin Dashboard</p>
+        <h2 className="text-2xl font-black text-navy tracking-tight">Job Calendar</h2>
+        <p className="text-sm text-navy/45 mt-1">Scheduled jobs appear here.</p>
       </div>
 
       <div className="flex items-center gap-3">
@@ -78,13 +85,13 @@ export default function CalendarSection() {
         <p className="text-sm text-slate-400">Loading...</p>
       ) : (
         <>
-          <div className="grid grid-cols-7 gap-2 text-center text-[11px] font-semibold uppercase tracking-wider text-slate-400">
+          <div className="grid grid-cols-7 gap-1.5 text-center text-[8px] font-bold uppercase tracking-[0.12em] text-navy/35">
             {["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"].map((d) => (
               <span key={d}>{d}</span>
             ))}
           </div>
 
-          <div className="grid grid-cols-7 gap-2">
+          <div className="grid grid-cols-7 gap-1.5">
             {gridDays.map((day) => {
               const dayJobs = jobs.filter((job) => {
                 const d = new Date(job.scheduled_start);
@@ -99,34 +106,25 @@ export default function CalendarSection() {
               return (
                 <div
                   key={day.toISOString()}
-                  className={`min-h-28 rounded-2xl border p-2 text-left ${
-                    isCurrentMonth
-                      ? "border-slate-200 bg-white"
-                      : "border-slate-100 bg-slate-50"
+                  className={`min-h-24 rounded-md border p-2 text-left ${
+                    !isCurrentMonth
+                      ? "border-navy/5 bg-navy/[0.02]"
+                      : isToday(day)
+                      ? "border-brand-red bg-white"
+                      : "border-navy/8 bg-white"
                   }`}
                 >
-                  <p className="text-xs font-semibold text-slate-400">{day.getDate()}</p>
+                  <p className={`text-[10px] font-semibold ${isToday(day) ? "text-brand-red font-bold" : "text-navy/35"}`}>
+                    {day.getDate()}
+                  </p>
                   <div className="mt-1 space-y-1.5">
                     {dayJobs.map((job) => (
-                      <div
-                        key={job.id}
-                        className="rounded-xl bg-navy/10 px-2 py-1.5 text-[11px] text-navy"
-                      >
-                        <p className="font-semibold truncate">{job.customer_name}</p>
-                        <p className="text-slate-500">
-                          {new Date(job.scheduled_start).toLocaleTimeString([], {
-                            hour: "numeric",
-                            minute: "2-digit",
-                          })}
+                      <div key={job.id} className="rounded-sm bg-navy px-1.5 py-1 mt-1">
+                        <p className="text-[9px] font-semibold text-white truncate">{job.customer_name}</p>
+                        <p className="text-[8px] text-white/55 mt-0.5">
+                          {new Date(job.scheduled_start).toLocaleTimeString([], { hour: "numeric", minute: "2-digit" })}
                         </p>
-                        <p className="truncate text-slate-500">{job.service_name}</p>
-                        <a
-                          href={`/api/admin/jobs/${job.id}/ics`}
-                          download
-                          className="mt-1 inline-block text-[10px] font-semibold text-navy underline underline-offset-2 hover:text-navy/70"
-                        >
-                          + Calendar
-                        </a>
+                        <p className="text-[8px] text-white/55 truncate">{job.service_name}</p>
                       </div>
                     ))}
                   </div>
