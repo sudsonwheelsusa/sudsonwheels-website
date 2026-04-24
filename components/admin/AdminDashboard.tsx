@@ -113,7 +113,7 @@ export default function AdminDashboard({
 
       <div className="flex flex-1">
         {/* Desktop sidebar */}
-        <aside className="hidden md:flex w-48 shrink-0 bg-navy flex-col py-5 px-3 gap-0.5">
+        <aside className="hidden md:flex w-56 shrink-0 bg-navy flex-col py-5 px-3 gap-1">
           <div className="px-2.5 mb-5 pb-4 border-b border-white/10">
             <p className="text-[13px] font-black tracking-tight text-white">
               Suds<span className="text-brand-red">On</span>Wheels
@@ -123,21 +123,20 @@ export default function AdminDashboard({
             </p>
           </div>
 
-          <p className="px-2.5 mb-2 text-[8px] font-bold uppercase tracking-[0.15em] text-white/22">
-            Menu
-          </p>
-
           {NAV.map((item) => (
             <button
               key={item.key}
               type="button"
               onClick={() => setSection(item.key)}
-              className={`flex items-center gap-2.5 rounded-md py-2 text-[12.5px] font-medium transition-colors text-left ${
+              className={`relative flex items-center gap-2.5 rounded-xl px-3 py-2.5 w-full text-[12.5px] font-medium transition-colors text-left ${
                 section === item.key
-                  ? "bg-white/8 text-white border-l-2 border-brand-red pl-2.25 pr-2.5"
-                  : "text-white/45 hover:bg-white/5 hover:text-white/75 px-2.5"
+                  ? "bg-white/10 text-white font-semibold"
+                  : "text-white/50 hover:bg-white/6 hover:text-white/75"
               }`}
             >
+              {section === item.key && (
+                <span className="absolute -left-2 top-1/2 -translate-y-1/2 w-1.5 h-6 bg-brand-red rounded-r-full" />
+              )}
               {NAV_ICONS[item.key]}
               <span>{item.label}</span>
             </button>
