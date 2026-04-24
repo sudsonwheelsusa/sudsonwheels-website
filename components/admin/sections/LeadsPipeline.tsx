@@ -8,11 +8,11 @@ import LeadCard from "./LeadCard";
 type Column = "new" | "quoted" | "approved" | "scheduled" | "done";
 
 const COLUMNS: { key: Column; label: string; badgeClass: string }[] = [
-  { key: "new", label: "New", badgeClass: "bg-slate-200 text-slate-700" },
+  { key: "new", label: "New", badgeClass: "bg-navy/8 text-navy" },
   { key: "quoted", label: "Quoted", badgeClass: "bg-amber-100 text-amber-800" },
   { key: "approved", label: "Approved", badgeClass: "bg-blue-100 text-blue-800" },
-  { key: "scheduled", label: "Scheduled", badgeClass: "bg-green-100 text-green-800" },
-  { key: "done", label: "Done", badgeClass: "bg-slate-100 text-slate-500" },
+  { key: "scheduled", label: "Scheduled", badgeClass: "bg-emerald-100 text-emerald-800" },
+  { key: "done", label: "Done", badgeClass: "bg-navy/5 text-navy/35" },
 ];
 
 const LEAD_SELECT =
@@ -74,8 +74,9 @@ export default function LeadsPipeline() {
     <div className="space-y-6">
       <div className="flex items-start justify-between gap-4 flex-wrap">
         <div>
-          <h2 className="text-2xl font-black text-navy">Leads Pipeline</h2>
-          <p className="text-sm text-slate-500 mt-1">
+          <p className="text-[9px] font-bold uppercase tracking-[0.2em] text-brand-red mb-1">Leads Pipeline</p>
+          <h2 className="text-2xl font-black text-navy tracking-tight">Pipeline</h2>
+          <p className="text-sm text-navy/45 mt-1">
             {activeLeads.filter((l) => l.status === "new").length} new ·{" "}
             {activeLeads.filter((l) => l.status === "quoted").length} quoted ·{" "}
             {activeLeads.filter((l) => l.status === "scheduled").length} scheduled
@@ -85,7 +86,7 @@ export default function LeadsPipeline() {
           value={search}
           onChange={(e) => setSearch(e.target.value)}
           placeholder="Search leads..."
-          className="w-full sm:w-64 rounded-xl border border-slate-200 px-3 py-2 text-sm"
+          className="w-full sm:w-64 rounded-md border border-navy/15 bg-white px-3 py-2 text-sm text-navy focus:outline-none focus:ring-2 focus:ring-brand-red/25"
         />
       </div>
 
@@ -106,11 +107,11 @@ export default function LeadsPipeline() {
             return (
               <div key={col.key} className="min-w-[200px] flex-1">
                 <div className="mb-3 flex items-center gap-2">
-                  <span className="text-xs font-bold uppercase tracking-wider text-slate-500">
+                  <span className="text-[9px] font-bold uppercase tracking-[0.15em] text-navy/40">
                     {col.label}
                   </span>
                   <span
-                    className={`rounded-full px-2 py-0.5 text-xs font-bold ${col.badgeClass}`}
+                    className={`rounded px-2 py-0.5 text-[9px] font-bold uppercase tracking-[0.06em] ${col.badgeClass}`}
                   >
                     {cards.length}
                   </span>
@@ -118,7 +119,7 @@ export default function LeadsPipeline() {
 
                 {isDoneCol && !showDone && cards.length > 0 ? (
                   <button
-                    className="w-full rounded-xl border border-dashed border-slate-200 py-4 text-xs text-slate-400 hover:text-slate-600"
+                    className="w-full rounded-lg border border-dashed border-navy/15 py-4 text-xs text-navy/35 hover:text-navy/60"
                     onClick={() => setShowDone(true)}
                   >
                     Show {cards.length} completed →
@@ -129,7 +130,7 @@ export default function LeadsPipeline() {
                       <LeadCard key={lead.id} lead={lead} onUpdate={loadLeads} />
                     ))}
                     {cards.length === 0 && (
-                      <div className="rounded-xl border-2 border-dashed border-slate-200 py-6 text-center text-xs text-slate-400">
+                      <div className="rounded-lg border border-dashed border-navy/15 py-6 text-center text-[11px] text-navy/30">
                         Empty
                       </div>
                     )}
