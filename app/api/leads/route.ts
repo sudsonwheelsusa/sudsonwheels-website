@@ -1,30 +1,11 @@
 import { NextRequest, NextResponse } from "next/server";
-import { Ratelimit } from "@upstash/ratelimit";
-import { Redis } from "@upstash/redis";
 import { createAdminClient } from "@/lib/supabase/admin";
 import { sendLeadNotificationEmails } from "@/lib/email/send";
 import { leadSchema } from "@/lib/schemas/lead";
+import { createRatelimiter, getClientIp } from "@/lib/security/ratelimit";
 import type { LeadRecord } from "@/lib/types";
 
-function getRatelimit() {
-  const url = process.env.UPSTASH_REDIS_REST_URL;
-  const token = process.env.UPSTASH_REDIS_REST_TOKEN;
-
-  if (
-    !url ||
-    !token ||
-    url.includes("your_upstash") ||
-    token.includes("your_upstash")
-  ) {
-    return null;
-  }
-
-  return new Ratelimit({
-    redis: Redis.fromEnv(),
-    limiter: Ratelimit.slidingWindow(5, "15 m"),
-    analytics: false,
-  });
-}
+const ratelimit = createRatelimiter(5, "15 m");
 
 async function verifyTurnstile(token: string) {
   const res = await fetch(
@@ -44,14 +25,10 @@ async function verifyTurnstile(token: string) {
 }
 
 export async function POST(request: NextRequest) {
-  const ip =
-    request.headers.get("x-forwarded-for")?.split(",")[0].trim() ??
-    "127.0.0.1";
+  const ip = getClientIp(request);
 
-  const ratelimit = getRatelimit();
   if (ratelimit) {
     const { success } = await ratelimit.limit(ip);
-
     if (!success) {
       return NextResponse.json(
         { error: "Too many requests. Try again later." },
