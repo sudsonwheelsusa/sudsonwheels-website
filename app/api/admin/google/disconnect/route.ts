@@ -49,7 +49,7 @@ export async function DELETE(request: NextRequest) {
     }
   }
 
-  await supabase
+  const { error: updateError } = await supabase
     .from("profiles")
     .update({
       google_tokens: null,
@@ -59,6 +59,14 @@ export async function DELETE(request: NextRequest) {
       google_channel_expiry: null,
     })
     .eq("id", identity.userId);
+
+  if (updateError) {
+    console.error("Failed to clear Google tokens:", updateError);
+    return NextResponse.json(
+      { error: "Could not disconnect Google Calendar" },
+      { status: 500 }
+    );
+  }
 
   return NextResponse.json({ ok: true });
 }

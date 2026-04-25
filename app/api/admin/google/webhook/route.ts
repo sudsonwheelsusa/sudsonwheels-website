@@ -81,7 +81,7 @@ export async function POST(request: NextRequest) {
     if (event.status === "cancelled") {
       // Deleted in Google Calendar — cancel the job
       // SCOPE: Only update jobs linked to this profile's calendar to prevent owner confusion
-      await supabase
+      const { error } = await supabase
         .from("jobs")
         .update({
           status: "cancelled",
@@ -90,10 +90,14 @@ export async function POST(request: NextRequest) {
         .eq("gcal_event_id", event.id)
         .eq("created_by", profile.id as string)
         .eq("status", "scheduled"); // only cancel jobs that are still scheduled
+      
+      if (error) {
+        console.error("Failed to cancel job from webhook:", error);
+      }
     } else if (event.start?.dateTime && event.end?.dateTime) {
       // Rescheduled in Google Calendar — update job times
       // SCOPE: Only update jobs linked to this profile's calendar to prevent owner confusion
-      await supabase
+      const { error } = await supabase
         .from("jobs")
         .update({
           scheduled_start: event.start.dateTime,
@@ -102,15 +106,23 @@ export async function POST(request: NextRequest) {
         })
         .eq("gcal_event_id", event.id)
         .eq("created_by", profile.id as string);
+      
+      if (error) {
+        console.error("Failed to reschedule job from webhook:", error);
+      }
     }
   }
 
   // Persist refreshed tokens if they changed
   if (validTokens.access_token !== tokens.access_token) {
-    await supabase
+    const { error } = await supabase
       .from("profiles")
       .update({ google_tokens: validTokens })
       .eq("id", profile.id as string);
+    
+    if (error) {
+      console.error("Failed to persist refreshed tokens in webhook:", error);
+    }
   }
 
   return NextResponse.json({ ok: true });

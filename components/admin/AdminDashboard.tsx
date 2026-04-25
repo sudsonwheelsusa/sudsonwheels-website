@@ -176,7 +176,7 @@ export default function AdminDashboard({
           {section === "overview" && <OverviewSection />}
           {section === "leads" && <LeadsPipeline />}
           {section === "calendar" && (
-            <Suspense>
+            <Suspense fallback={<p className="text-sm text-navy/30">Loading calendar...</p>}>
               <CalendarSection />
             </Suspense>
           )}
