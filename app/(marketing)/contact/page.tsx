@@ -10,6 +10,14 @@ export const metadata: Metadata = {
   title: "Contact",
   description:
     "Request a free pressure washing quote from SudsOnWheels. Serving Ashland and North Central Ohio.",
+  alternates: { canonical: "/contact" },
+  openGraph: {
+    title: "Get a Free Quote | SudsOnWheels",
+    description:
+      "Request a free pressure washing estimate. We serve Ashland, Mansfield, Wooster, and all of North Central Ohio.",
+    url: "/contact",
+    type: "website",
+  },
 };
 
 const CONTACT_METHODS: Array<{ label: string; value: string; href: string | null; icon: ReactNode }> = [

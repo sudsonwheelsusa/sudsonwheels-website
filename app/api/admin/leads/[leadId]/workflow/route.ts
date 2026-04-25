@@ -6,6 +6,9 @@ import { sendQuoteEmail, sendScheduledJobEmail } from "@/lib/email/send";
 import { generateJobIcs } from "@/lib/ics";
 import { getValidTokens, createCalendarEvent } from "@/lib/google/calendar";
 import type { JobRecord, LeadRecord, GoogleTokens } from "@/lib/types";
+import { createRatelimiter, getClientIp } from "@/lib/security/ratelimit";
+
+const ratelimit = createRatelimiter(60, "1 m");
 
 const leadSelect =
   "id, first_name, last_name, phone, email, service_id, service_name, location_address, location_lat, location_lng, message, status, internal_notes, quoted_amount, estimate_sent_at, approved_at, rejected_at, scheduled_job_id, completed_at, created_at";
@@ -14,6 +17,14 @@ export async function POST(
   request: NextRequest,
   context: { params: Promise<{ leadId: string }> }
 ) {
+  const ip = getClientIp(request);
+  if (ratelimit) {
+    const { success } = await ratelimit.limit(ip);
+    if (!success) {
+      return NextResponse.json({ error: "Too many requests." }, { status: 429 });
+    }
+  }
+
   const adminIdentity = await requireAdmin();
 
   const { leadId } = await context.params;

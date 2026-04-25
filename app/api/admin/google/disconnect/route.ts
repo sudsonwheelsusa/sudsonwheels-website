@@ -1,10 +1,21 @@
-import { NextResponse } from "next/server";
+import { NextRequest, NextResponse } from "next/server";
 import { requireAdmin } from "@/lib/auth/admin";
 import { createAdminClient } from "@/lib/supabase/admin";
 import { getValidTokens, stopWatchChannel } from "@/lib/google/calendar";
 import type { GoogleTokens } from "@/lib/types";
+import { createRatelimiter, getClientIp } from "@/lib/security/ratelimit";
 
-export async function DELETE() {
+const ratelimit = createRatelimiter(10, "1 h");
+
+export async function DELETE(request: NextRequest) {
+  const ip = getClientIp(request);
+  if (ratelimit) {
+    const { success } = await ratelimit.limit(ip);
+    if (!success) {
+      return NextResponse.json({ error: "Too many requests." }, { status: 429 });
+    }
+  }
+
   let identity: { userId: string; email: string };
   try {
     identity = await requireAdmin();

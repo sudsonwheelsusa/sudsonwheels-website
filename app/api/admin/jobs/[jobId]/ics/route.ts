@@ -4,11 +4,22 @@ import { NextRequest, NextResponse } from "next/server";
 import { requireAdmin } from "@/lib/auth/admin";
 import { createAdminClient } from "@/lib/supabase/admin";
 import { generateJobIcs } from "@/lib/ics";
+import { createRatelimiter, getClientIp } from "@/lib/security/ratelimit";
+
+const ratelimit = createRatelimiter(60, "1 m");
 
 export async function GET(
-  _request: NextRequest,
+  request: NextRequest,
   context: { params: Promise<{ jobId: string }> }
 ) {
+  const ip = getClientIp(request);
+  if (ratelimit) {
+    const { success } = await ratelimit.limit(ip);
+    if (!success) {
+      return NextResponse.json({ error: "Too many requests." }, { status: 429 });
+    }
+  }
+
   await requireAdmin();
 
   const { jobId } = await context.params;

@@ -6,12 +6,23 @@ import { requireAdmin } from "@/lib/auth/admin";
 import { adminMarkDoneSchema } from "@/lib/schemas/admin-mark-done";
 import { getValidTokens, deleteCalendarEvent } from "@/lib/google/calendar";
 import type { GoogleTokens } from "@/lib/types";
+import { createRatelimiter, getClientIp } from "@/lib/security/ratelimit";
+
+const ratelimit = createRatelimiter(60, "1 m");
 
 export async function PATCH(
   request: NextRequest,
   context: { params: Promise<{ leadId: string }> }
 ) {
-  const { userId: adminId } = await requireAdmin();
+  const ip = getClientIp(request);
+  if (ratelimit) {
+    const { success } = await ratelimit.limit(ip);
+    if (!success) {
+      return NextResponse.json({ error: "Too many requests." }, { status: 429 });
+    }
+  }
+
+  await requireAdmin();
 
   const { leadId } = await context.params;
 

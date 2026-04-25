@@ -8,6 +8,14 @@ export const metadata: Metadata = {
   title: "About",
   description:
     "Family-owned mobile pressure washing based in Ashland, OH. Learn about SudsOnWheels and the team behind the work.",
+  alternates: { canonical: "/about" },
+  openGraph: {
+    title: "About SudsOnWheels | Ashland, OH Pressure Washing",
+    description:
+      "Founded by Ashland University wrestlers. Family-owned, fully insured, mobile pressure washing — we bring the equipment to you.",
+    url: "/about",
+    type: "website",
+  },
 };
 
 const TRUST_CARDS = [

@@ -6,9 +6,17 @@ import PageHeader from "@/components/PageHeader";
 import ScrollReveal from "@/components/ScrollReveal";
 
 export const metadata: Metadata = {
-  title: "Gallery | SudsOnWheels",
+  title: "Gallery",
   description:
     "See our pressure washing results — before and after photos of fleet washes, farm equipment, and more in Ashland, OH.",
+  alternates: { canonical: "/gallery" },
+  openGraph: {
+    title: "Before & After Gallery | SudsOnWheels",
+    description:
+      "Real jobs, real results. Before-and-after pressure washing photos from across North Central Ohio.",
+    url: "/gallery",
+    type: "website",
+  },
 };
 
 export default async function GalleryPage() {

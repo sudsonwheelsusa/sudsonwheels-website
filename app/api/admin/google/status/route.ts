@@ -1,4 +1,4 @@
-import { NextResponse } from "next/server";
+import { NextRequest, NextResponse } from "next/server";
 import { requireAdmin } from "@/lib/auth/admin";
 import { createAdminClient } from "@/lib/supabase/admin";
 import {
@@ -8,8 +8,19 @@ import {
 } from "@/lib/google/calendar";
 import { randomUUID } from "crypto";
 import type { GoogleTokens } from "@/lib/types";
+import { createRatelimiter, getClientIp } from "@/lib/security/ratelimit";
 
-export async function GET() {
+const ratelimit = createRatelimiter(60, "1 m");
+
+export async function GET(request: NextRequest) {
+  const ip = getClientIp(request);
+  if (ratelimit) {
+    const { success } = await ratelimit.limit(ip);
+    if (!success) {
+      return NextResponse.json({ error: "Too many requests." }, { status: 429 });
+    }
+  }
+
   let identity: { userId: string; email: string };
   try {
     identity = await requireAdmin();
