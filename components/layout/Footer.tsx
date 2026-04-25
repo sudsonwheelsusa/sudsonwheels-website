@@ -84,6 +84,7 @@ export default function Footer() {
             customers across Ashland County and North Central Ohio. We bring the
             equipment to you.
           </p>
+          <p className="text-sm font-semibold text-white/80">Licensed, insured</p>
           <a
             href={`mailto:${CONTACT_EMAIL}`}
             className="inline-flex items-center gap-2 bg-brand-red text-white text-sm font-bold px-4 py-2.5 rounded-lg hover:bg-brand-red/90 transition-colors"

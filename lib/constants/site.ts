@@ -1,4 +1,5 @@
 export const CONTACT_EMAIL = "contact@sudsonwheelsusa.com";
+export const CONTACT_PHONE = "+13309270080";
 export const BASE_CITY = "Ashland, OH";
 export const MAP_DEFAULT_CENTER = {
   lat: 40.8687,

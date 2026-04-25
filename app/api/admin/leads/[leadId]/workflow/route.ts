@@ -64,6 +64,25 @@ export async function POST(
 
   let jobRecord: JobRecord | null = null;
 
+  // State machine validation: ensure action is valid for current lead status
+  const validTransitions: Record<string, string[]> = {
+    approve: ["new", "quoted"],
+    reject: ["new", "quoted"],
+    quote: ["new"],
+    schedule: ["approved"],
+  };
+
+  const allowedActions = validTransitions[input.action] || [];
+  if (!allowedActions.includes(lead.status)) {
+    return NextResponse.json(
+      {
+        error: `Cannot ${input.action} a lead with status "${lead.status}". ` +
+               `Valid statuses: ${allowedActions.join(", ") || "none"}.`,
+      },
+      { status: 400 }
+    );
+  }
+
   if (input.action === "approve") {
     leadUpdates.status = "approved";
     leadUpdates.approved_at = now;
@@ -100,6 +119,29 @@ export async function POST(
   }
 
   if (input.action === "schedule") {
+    // Guard: prevent double-click by checking if a job already exists for this lead
+    const { data: existingJob, error: existingJobError } = await supabase
+      .from("jobs")
+      .select("id")
+      .eq("lead_id", leadId)
+      .eq("status", "scheduled")
+      .maybeSingle();
+
+    if (existingJobError) {
+      console.error("Job lookup error:", existingJobError);
+      return NextResponse.json(
+        { error: "Could not check for existing job." },
+        { status: 500 }
+      );
+    }
+
+    if (existingJob) {
+      return NextResponse.json(
+        { error: "A job is already scheduled for this lead." },
+        { status: 409 }
+      );
+    }
+
     const { data: insertedJob, error: jobError } = await supabase
       .from("jobs")
       .insert({

@@ -37,7 +37,8 @@ export default function LeadsPipeline() {
     const { data, error: err } = await supabase
       .from("leads")
       .select(LEAD_SELECT)
-      .order("created_at", { ascending: false });
+      .order("created_at", { ascending: false })
+      .limit(500);
 
     if (err) {
       setError(err.message);

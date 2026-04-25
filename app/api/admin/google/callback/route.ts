@@ -114,14 +114,7 @@ export async function GET(request: NextRequest) {
     console.error("Failed to register Google push channel:", err);
   }
 
-  const response = NextResponse.redirect(
-    `${BASE()}/portal/dashboard?gcal=connected`
-  );
-
-  // Clear state cookie
-  response.cookies.delete("google_oauth_state");
-
-  await supabase
+  const { error: updateError } = await supabase
     .from("profiles")
     .update({
       google_tokens: tokens,
@@ -131,6 +124,20 @@ export async function GET(request: NextRequest) {
       google_channel_expiry: channelData.expiry_ms || null,
     })
     .eq("id", identity.userId);
+
+  if (updateError) {
+    console.error("Failed to persist Google tokens:", updateError);
+    return NextResponse.redirect(
+      `${BASE()}/portal/dashboard?gcal=error&reason=token_persist`
+    );
+  }
+
+  const response = NextResponse.redirect(
+    `${BASE()}/portal/dashboard?gcal=connected`
+  );
+
+  // Clear state cookie
+  response.cookies.delete("google_oauth_state");
 
   return response;
 }
