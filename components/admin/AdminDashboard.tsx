@@ -88,41 +88,42 @@ export default function AdminDashboard({
   return (
     <div className="flex flex-col min-h-screen">
       {/* Mobile top nav */}
-      <div className="md:hidden bg-navy border-b border-white/10">
-        <div className="flex items-center justify-between px-3 py-2">
-          <p className="text-[11px] font-black tracking-tight text-white">
+      <div className="md:hidden bg-navy border-b border-white/10 sticky top-0 z-20">
+        <div className="flex items-center justify-between px-4 py-2.5">
+          <p className="text-[13px] font-black tracking-tight text-white">
             Suds<span className="text-brand-red">On</span>Wheels
           </p>
           <button
             type="button"
             onClick={handleSignOut}
-            className="text-xs text-white/40 hover:text-white/70 transition-colors px-2 py-1"
+            className="text-[11px] font-medium text-white/40 hover:text-white/70 transition-colors"
           >
             Sign out
           </button>
         </div>
-        <div className="flex overflow-x-auto gap-0.5 px-3 pb-2 scrollbar-none">
+        {/* Icon-only tab bar on mobile */}
+        <div className="grid grid-cols-6 border-t border-white/8">
           {NAV.map((item) => (
             <button
               key={item.key}
               type="button"
               onClick={() => setSection(item.key)}
-              className={`flex shrink-0 items-center gap-1.5 rounded-md px-3 py-2 text-[11.5px] font-medium transition-colors whitespace-nowrap ${
+              className={`flex flex-col items-center gap-1 py-2.5 text-[9px] font-semibold tracking-wide uppercase transition-colors ${
                 section === item.key
-                  ? "bg-white/10 text-white border-b-2 border-brand-red rounded-b-none"
-                  : "text-white/40 hover:text-white/70"
+                  ? "text-white border-t-2 border-brand-red -mt-px"
+                  : "text-white/35 hover:text-white/60"
               }`}
             >
               {NAV_ICONS[item.key]}
-              <span>{item.label}</span>
+              <span className="hidden xs:block">{item.label}</span>
             </button>
           ))}
         </div>
       </div>
 
-      <div className="flex flex-1">
+      <div className="flex flex-1 min-h-0">
         {/* Desktop sidebar */}
-        <aside className="hidden md:flex w-56 shrink-0 bg-navy flex-col py-5 px-3 gap-1">
+        <aside className="hidden md:flex w-56 shrink-0 bg-navy flex-col py-5 px-3 gap-1 sticky top-0 h-screen overflow-y-auto">
           <div className="px-2.5 mb-5 pb-4 border-b border-white/10">
             <p className="text-[13px] font-black tracking-tight text-white">
               Suds<span className="text-brand-red">On</span>Wheels
@@ -171,7 +172,7 @@ export default function AdminDashboard({
         </aside>
 
         {/* Main content */}
-        <main className="flex-1 overflow-auto bg-offwhite p-4 sm:p-6 md:p-8">
+        <main className="flex-1 overflow-auto bg-offwhite p-4 sm:p-5 md:p-8 min-h-full">
           {section === "overview" && <OverviewSection />}
           {section === "leads" && <LeadsPipeline />}
           {section === "calendar" && (

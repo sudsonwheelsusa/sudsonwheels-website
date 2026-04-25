@@ -140,9 +140,9 @@ export default function OverviewSection() {
   ];
 
   return (
-    <div className="space-y-6 max-w-6xl">
+    <div className="space-y-6 w-full">
       {/* Header */}
-      <div className="flex items-start justify-between gap-4">
+      <div className="flex items-start justify-between gap-4 flex-wrap">
         <div>
           <p className="text-xs text-navy/40 font-medium mb-1">{getFormattedDate()}</p>
           <h2 className="text-2xl font-black text-navy tracking-tight">
@@ -161,22 +161,22 @@ export default function OverviewSection() {
       </div>
 
       {/* 4 stat cards */}
-      <div className="grid grid-cols-2 gap-4 sm:grid-cols-4">
+      <div className="grid grid-cols-2 gap-3 sm:gap-4 sm:grid-cols-4">
         {statCards.map((card) => (
           <div key={card.label} className="bg-white rounded-2xl overflow-hidden shadow-sm border border-navy/8">
             <div className={`h-1 w-full ${card.accent}`} />
-            <div className="p-4">
+            <div className="p-3 sm:p-4">
               <div className="flex items-start justify-between gap-2">
-                <div>
-                  <p className="text-[9px] font-bold uppercase tracking-[0.15em] text-navy/40">
+                <div className="min-w-0">
+                  <p className="text-[8px] sm:text-[9px] font-bold uppercase tracking-[0.15em] text-navy/40 truncate">
                     {card.label}
                   </p>
-                  <p className="text-3xl font-black text-navy tracking-tight mt-1">
+                  <p className="text-2xl sm:text-3xl font-black text-navy tracking-tight mt-1">
                     {loading ? "—" : card.value}
                   </p>
-                  <p className="text-[10px] text-navy/40 mt-1">{card.sub}</p>
+                  <p className="text-[9px] sm:text-[10px] text-navy/40 mt-1 truncate">{card.sub}</p>
                 </div>
-                <div className="rounded-xl border border-navy/10 p-1.5 mt-0.5 shrink-0">
+                <div className="rounded-xl border border-navy/10 p-1.5 mt-0.5 shrink-0 hidden sm:flex">
                   {card.icon}
                 </div>
               </div>
@@ -186,7 +186,7 @@ export default function OverviewSection() {
       </div>
 
       {/* Middle row: Pipeline / Upcoming Jobs / Google Calendar */}
-      <div className="grid grid-cols-1 gap-4 md:grid-cols-3">
+      <div className="grid grid-cols-1 gap-3 sm:gap-4 lg:grid-cols-3">
         {/* Pipeline Breakdown */}
         <div className="bg-white rounded-2xl border border-navy/8 shadow-sm p-5">
           <h3 className="text-sm font-bold text-navy mb-4">Pipeline Breakdown</h3>

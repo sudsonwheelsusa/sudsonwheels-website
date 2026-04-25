@@ -70,7 +70,7 @@ export default function CalendarSection() {
     day.getDate() === today.getDate();
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-4 w-full">
       <div>
         <p className="text-[9px] font-bold uppercase tracking-[0.2em] text-brand-red mb-1">Admin Dashboard</p>
         <h2 className="text-2xl font-black text-navy tracking-tight">Job Calendar</h2>
@@ -152,16 +152,19 @@ export default function CalendarSection() {
       </div>
 
       {loading ? (
-        <p className="text-sm text-slate-400">Loading...</p>
+        <p className="text-sm text-navy/30">Loading...</p>
       ) : (
         <>
-          <div className="grid grid-cols-7 gap-1.5 text-center text-[8px] font-bold uppercase tracking-[0.12em] text-navy/35">
+          {/* Horizontal scroll wrapper for mobile/tablet */}
+          <div className="overflow-x-auto -mx-4 px-4 sm:mx-0 sm:px-0">
+            <div className="min-w-150">
+          <div className="grid grid-cols-7 gap-1 sm:gap-1.5 text-center text-[8px] font-bold uppercase tracking-[0.12em] text-navy/35 mb-1">
             {["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"].map((d) => (
               <span key={d}>{d}</span>
             ))}
           </div>
 
-          <div className="grid grid-cols-7 gap-1.5">
+          <div className="grid grid-cols-7 gap-1 sm:gap-1.5">
             {gridDays.map((day) => {
               const dayJobs = jobs.filter((job) => {
                 const d = new Date(job.scheduled_start);
@@ -216,6 +219,9 @@ export default function CalendarSection() {
               );
             })}
           </div>
+
+          </div>{/* end min-w wrapper */}
+          </div>{/* end scroll wrapper */}
 
           <div className="mt-3 flex gap-4 items-center">
             <div className="flex items-center gap-1.5">
