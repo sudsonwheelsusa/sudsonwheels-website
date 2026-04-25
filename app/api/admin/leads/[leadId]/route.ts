@@ -22,7 +22,7 @@ export async function PATCH(
     }
   }
 
-  const { userId: adminId } = await requireAdmin();
+  await requireAdmin();
 
   const { leadId } = await context.params;
 
