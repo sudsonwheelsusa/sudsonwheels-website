@@ -2,6 +2,9 @@ import { NextRequest, NextResponse } from "next/server";
 import { createAdminClient } from "@/lib/supabase/admin";
 import { getValidTokens } from "@/lib/google/calendar";
 import type { GoogleTokens } from "@/lib/types";
+import { createRatelimiter, getClientIp } from "@/lib/security/ratelimit";
+
+const ratelimit = createRatelimiter(120, "1 m");
 
 export async function POST(request: NextRequest) {
   const channelToken = request.headers.get("X-Goog-Channel-Token");
@@ -11,6 +14,14 @@ export async function POST(request: NextRequest) {
   // Reject requests with wrong token
   if (channelToken !== process.env.GOOGLE_WEBHOOK_SECRET) {
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+  }
+
+  const ip = getClientIp(request);
+  if (ratelimit) {
+    const { success } = await ratelimit.limit(ip);
+    if (!success) {
+      return NextResponse.json({ error: "Too many requests." }, { status: 429 });
+    }
   }
 
   // "sync" is Google's initial handshake — acknowledge and do nothing

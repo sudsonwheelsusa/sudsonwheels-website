@@ -4,10 +4,21 @@ import { createAdminClient } from "@/lib/supabase/admin";
 import { registerWatchChannel, stopWatchChannel, getValidTokens } from "@/lib/google/calendar";
 import { randomUUID } from "crypto";
 import type { GoogleTokens } from "@/lib/types";
+import { createRatelimiter, getClientIp } from "@/lib/security/ratelimit";
 
 const BASE = () => process.env.NEXT_PUBLIC_BASE_URL!;
 
+const ratelimit = createRatelimiter(10, "1 h");
+
 export async function GET(request: NextRequest) {
+  const ip = getClientIp(request);
+  if (ratelimit) {
+    const { success } = await ratelimit.limit(ip);
+    if (!success) {
+      return NextResponse.json({ error: "Too many requests." }, { status: 429 });
+    }
+  }
+
   let identity: { userId: string; email: string };
   try {
     identity = await requireAdmin();

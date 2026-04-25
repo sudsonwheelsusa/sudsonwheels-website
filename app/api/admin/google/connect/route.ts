@@ -1,11 +1,22 @@
-import { NextResponse } from "next/server";
+import { NextRequest, NextResponse } from "next/server";
 import { requireAdmin } from "@/lib/auth/admin";
 import { randomUUID } from "crypto";
+import { createRatelimiter, getClientIp } from "@/lib/security/ratelimit";
 
 const GOOGLE_AUTH_URL = "https://accounts.google.com/o/oauth2/v2/auth";
 const SCOPES = "https://www.googleapis.com/auth/calendar.events";
 
-export async function GET() {
+const ratelimit = createRatelimiter(10, "1 h");
+
+export async function GET(request: NextRequest) {
+  const ip = getClientIp(request);
+  if (ratelimit) {
+    const { success } = await ratelimit.limit(ip);
+    if (!success) {
+      return NextResponse.json({ error: "Too many requests." }, { status: 429 });
+    }
+  }
+
   await requireAdmin();
 
   // Generate CSRF state token
