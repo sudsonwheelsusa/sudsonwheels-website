@@ -91,4 +91,12 @@ export interface JobRecord {
   notes: string | null;
   created_by: string | null;
   created_at: string;
+  gcal_event_id: string | null;
+  gcal_synced_at: string | null;
+}
+
+export interface GoogleTokens {
+  access_token: string;
+  refresh_token: string;
+  expiry_ms: number;
 }
