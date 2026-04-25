@@ -10,9 +10,17 @@ import ScrollReveal from "@/components/ScrollReveal";
 import TestimonialCarousel from "@/components/TestimonialCarousel";
 
 export const metadata: Metadata = {
-  title: "SudsOnWheels - Mobile Pressure Washing | Ashland, OH",
+  title: "SudsOnWheels — Mobile Pressure Washing | Ashland, OH",
   description:
     "Professional mobile pressure washing serving Ashland and North Central Ohio. Free estimates for houses, driveways, decks, gutters, and fleet washing.",
+  alternates: { canonical: "/" },
+  openGraph: {
+    title: "SudsOnWheels — Mobile Pressure Washing | Ashland, OH",
+    description:
+      "Professional mobile pressure washing serving Ashland and North Central Ohio. Free estimates for houses, driveways, decks, gutters, and fleet washing.",
+    url: "/",
+    type: "website",
+  },
 };
 
 const TRUST_ITEMS = [
