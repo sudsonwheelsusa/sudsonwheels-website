@@ -42,7 +42,7 @@ export default function OverviewSection() {
     async function load() {
       const supabase = createClient();
 
-      const [leadsRes, jobsRes] = await Promise.all([
+      const [leadsRes, jobsRes, completedJobsRes] = await Promise.all([
         supabase
           .from("leads")
           .select("id, first_name, last_name, service_name, status, completed_at, quoted_amount, created_at")
@@ -50,21 +50,28 @@ export default function OverviewSection() {
           .limit(30),
         supabase
           .from("jobs")
-          .select("id, lead_id, estimate_id, title, status, scheduled_start, scheduled_end, service_name, customer_name, location_address, location_lat, location_lng, notes, created_by, created_at")
+          .select("id, lead_id, estimate_id, parent_job_id, title, status, scheduled_start, scheduled_end, service_name, customer_name, location_address, location_lat, location_lng, notes, recurrence_rule, units_completed, rate_per_unit, total_revenue, created_by, created_at, gcal_event_id, gcal_synced_at")
           .eq("status", "scheduled")
           .gte("scheduled_start", new Date().toISOString())
           .order("scheduled_start", { ascending: true })
           .limit(1),
+        supabase
+          .from("jobs")
+          .select("total_revenue")
+          .eq("status", "completed")
+          .not("total_revenue", "is", null),
       ]);
 
       const allLeads = (leadsRes.data ?? []) as LeadRecord[];
       setLeads(allLeads);
 
-      // Total earned from completed leads with a quoted amount
-      const earned = allLeads
+      // Total earned: completed leads (quoted_amount) + completed jobs (total_revenue)
+      const leadEarned = allLeads
         .filter((l) => l.completed_at != null && l.quoted_amount != null)
         .reduce((sum, l) => sum + (l.quoted_amount ?? 0), 0);
-      setTotalEarned(earned);
+      const jobEarned = (completedJobsRes.data ?? [])
+        .reduce((sum, j) => sum + ((j.total_revenue as number | null) ?? 0), 0);
+      setTotalEarned(leadEarned + jobEarned);
 
       if (jobsRes.data && jobsRes.data.length > 0) {
         setNextJob(jobsRes.data[0] as JobRecord);
