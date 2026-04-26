@@ -5,6 +5,8 @@ import { useSearchParams } from "next/navigation";
 import { Button } from "@/components/ui/button";
 import { createClient } from "@/lib/supabase/browser";
 import type { JobRecord } from "@/lib/types";
+import CreateJobSheet from "@/components/admin/sheets/CreateJobSheet";
+import JobDetailSheet from "@/components/admin/sheets/JobDetailSheet";
 
 function getMonthGrid(month: Date): Date[] {
   const firstDay = new Date(month.getFullYear(), month.getMonth(), 1);
@@ -31,17 +33,23 @@ export default function CalendarSection() {
     const today = new Date();
     return new Date(today.getFullYear(), today.getMonth(), 1);
   });
+  const [createOpen, setCreateOpen] = useState(false);
+  const [selectedJob, setSelectedJob] = useState<JobRecord | null>(null);
   const searchParams = useSearchParams();
   const gcalParam = searchParams.get("gcal");
 
+  async function reload() {
+    const supabase = createClient();
+    const { data } = await supabase
+      .from("jobs")
+      .select("id, lead_id, estimate_id, parent_job_id, title, status, scheduled_start, scheduled_end, service_name, customer_name, location_address, location_lat, location_lng, notes, created_by, created_at, gcal_event_id, gcal_synced_at, recurrence_rule, units_completed, rate_per_unit, total_revenue")
+      .order("scheduled_start", { ascending: true });
+    setJobs((data ?? []) as JobRecord[]);
+  }
+
   useEffect(() => {
     async function load() {
-      const supabase = createClient();
-      const { data } = await supabase
-        .from("jobs")
-        .select("id, lead_id, estimate_id, title, status, scheduled_start, scheduled_end, service_name, customer_name, location_address, location_lat, location_lng, notes, created_by, created_at, gcal_event_id, gcal_synced_at")
-        .order("scheduled_start", { ascending: true });
-      setJobs((data ?? []) as JobRecord[]);
+      await reload();
       setLoading(false);
     }
     async function checkConnection() {
@@ -71,10 +79,20 @@ export default function CalendarSection() {
 
   return (
     <div className="space-y-4 w-full">
-      <div>
-        <p className="text-[9px] font-bold uppercase tracking-[0.2em] text-brand-red mb-1">Admin Dashboard</p>
-        <h2 className="text-2xl font-black text-navy tracking-tight">Job Calendar</h2>
-        <p className="text-sm text-navy/45 mt-1">Scheduled jobs appear here.</p>
+      <div className="flex items-start justify-between">
+        <div>
+          <p className="text-[9px] font-bold uppercase tracking-[0.2em] text-brand-red mb-1">Admin Dashboard</p>
+          <h2 className="text-2xl font-black text-navy tracking-tight">Job Calendar</h2>
+          <p className="text-sm text-navy/45 mt-1">Scheduled jobs appear here.</p>
+        </div>
+        <Button
+          type="button"
+          size="sm"
+          className="bg-navy text-white hover:bg-navy/90 shrink-0 mt-1"
+          onClick={() => setCreateOpen(true)}
+        >
+          + New Job
+        </Button>
       </div>
 
       {/* Google Calendar connection banner */}
@@ -199,7 +217,8 @@ export default function CalendarSection() {
                       return (
                         <div
                           key={job.id}
-                          className={`rounded-sm px-1.5 py-1 mt-1 ${
+                          onClick={() => setSelectedJob(job)}
+                          className={`rounded-sm px-1.5 py-1 mt-1 cursor-pointer hover:opacity-80 transition-opacity ${
                             fromGoogle ? "bg-[#4285f4]" : "bg-navy"
                           }`}
                         >
@@ -237,6 +256,16 @@ export default function CalendarSection() {
           </div>
         </>
       )}
+      <CreateJobSheet
+        open={createOpen}
+        onOpenChange={setCreateOpen}
+        onCreated={reload}
+      />
+      <JobDetailSheet
+        job={selectedJob}
+        onClose={() => setSelectedJob(null)}
+        onUpdated={reload}
+      />
     </div>
   );
 }

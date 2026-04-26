@@ -119,6 +119,7 @@ export async function registerWatchChannel(
   calendarId: string,
   webhookUrl: string,
   channelId: string,
+  channelToken: string,
 ): Promise<WatchChannelResult> {
   const result = await calFetch<{ id: string; resourceId: string; expiration: string }>(
     tokens,
@@ -129,7 +130,7 @@ export async function registerWatchChannel(
         id: channelId,
         type: "web_hook",
         address: webhookUrl,
-        token: process.env.GOOGLE_WEBHOOK_SECRET,
+        token: channelToken,
       }),
     },
   );

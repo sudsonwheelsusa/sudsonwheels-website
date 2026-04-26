@@ -5,7 +5,7 @@ function icsDate(iso: string): string {
 }
 
 function icsEscape(value: string): string {
-  return value.replace(/\\/g, "\\\\").replace(/;/g, "\\;").replace(/,/g, "\\,").replace(/\n/g, "\\n");
+  return value.replace(/\\/g, "\\\\").replace(/;/g, "\\;").replace(/,/g, "\\,").replace(/[\r\n]/g, "\\n");
 }
 
 export function generateJobIcs(job: Pick<JobRecord, "id" | "title" | "scheduled_start" | "scheduled_end" | "location_address" | "service_name" | "customer_name">): string {

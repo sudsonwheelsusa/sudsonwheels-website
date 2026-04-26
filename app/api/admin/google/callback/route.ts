@@ -105,11 +105,12 @@ export async function GET(request: NextRequest) {
 
   // Register a new push notification channel with Google
   const channelId = randomUUID();
+  const channelToken = randomUUID();
   const webhookUrl = `${BASE()}/api/admin/google/webhook`;
 
   let channelData = { channelId: "", resourceId: "", expiry_ms: 0 };
   try {
-    channelData = await registerWatchChannel(tokens, "primary", webhookUrl, channelId);
+    channelData = await registerWatchChannel(tokens, "primary", webhookUrl, channelId, channelToken);
   } catch (err) {
     console.error("Failed to register Google push channel:", err);
   }
@@ -120,6 +121,7 @@ export async function GET(request: NextRequest) {
       google_tokens: tokens,
       google_calendar_id: "primary",
       google_channel_id: channelData.channelId || null,
+      google_channel_token: channelData.channelId ? channelToken : null,
       google_resource_id: channelData.resourceId || null,
       google_channel_expiry: channelData.expiry_ms || null,
     })
