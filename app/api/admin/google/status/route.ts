@@ -67,12 +67,14 @@ export async function GET(request: NextRequest) {
 
       // Register new channel
       const newChannelId = randomUUID();
+      const newChannelToken = randomUUID();
       const webhookUrl = `${process.env.NEXT_PUBLIC_BASE_URL}/api/admin/google/webhook`;
       const channel = await registerWatchChannel(
         validTokens,
         calendarId,
         webhookUrl,
-        newChannelId
+        newChannelId,
+        newChannelToken
       );
 
       await supabase
@@ -80,6 +82,7 @@ export async function GET(request: NextRequest) {
         .update({
           google_tokens: validTokens,
           google_channel_id: channel.channelId,
+          google_channel_token: channel.channelId ? newChannelToken : null,
           google_resource_id: channel.resourceId,
           google_channel_expiry: channel.expiry_ms,
         })

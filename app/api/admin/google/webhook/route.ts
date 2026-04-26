@@ -1,4 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
+import { timingSafeEqual } from "crypto";
 import { createAdminClient } from "@/lib/supabase/admin";
 import { getValidTokens } from "@/lib/google/calendar";
 import type { GoogleTokens } from "@/lib/types";
@@ -11,8 +12,8 @@ export async function POST(request: NextRequest) {
   const channelId = request.headers.get("X-Goog-Channel-ID");
   const resourceState = request.headers.get("X-Goog-Resource-State");
 
-  // Reject requests with wrong token
-  if (channelToken !== process.env.GOOGLE_WEBHOOK_SECRET) {
+  // Reject immediately if either header is missing
+  if (!channelToken || !channelId) {
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
   }
 
@@ -31,12 +32,27 @@ export async function POST(request: NextRequest) {
 
   const supabase = createAdminClient();
 
-  // Find the admin profile that owns this channel
+  // Find the admin profile that owns this channel, including its per-channel token
   const { data: profile } = await supabase
     .from("profiles")
-    .select("id, google_tokens, google_calendar_id")
+    .select("id, google_tokens, google_calendar_id, google_channel_token")
     .eq("google_channel_id", channelId)
     .single();
+
+  // Verify the per-channel token with a timing-safe comparison
+  const storedToken = profile?.google_channel_token as string | null;
+  if (!storedToken) {
+    return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+  }
+  try {
+    const a = Buffer.from(channelToken, "utf8");
+    const b = Buffer.from(storedToken, "utf8");
+    if (a.length !== b.length || !timingSafeEqual(a, b)) {
+      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+    }
+  } catch {
+    return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+  }
 
   if (!profile?.google_tokens) {
     return NextResponse.json({ error: "No matching profile" }, { status: 404 });
