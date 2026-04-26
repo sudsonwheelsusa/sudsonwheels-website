@@ -22,9 +22,6 @@ export function createRatelimiter(requests: number, window: RateLimitWindow) {
     url.includes("your_upstash") ||
     token.includes("your_upstash")
   ) {
-    if (process.env.NODE_ENV === "production") {
-      throw new Error("UPSTASH_REDIS_REST_URL and UPSTASH_REDIS_REST_TOKEN must be configured in production");
-    }
     return null;
   }
 
