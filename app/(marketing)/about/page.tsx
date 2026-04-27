@@ -19,7 +19,6 @@ export const metadata: Metadata = {
 };
 
 const TRUST_CARDS = [
-  { icon: "🛡️", title: "Fully Insured", desc: "Liability coverage on every single job — protecting your property and ours" },
   { icon: "📋", title: "Free Estimates", desc: "No cost, no obligation — we assess and quote before we ever start" },
   { icon: "✅", title: "Satisfaction Guaranteed", desc: "Not happy? We come back and make it right, no argument" },
   { icon: "🏡", title: "Family Owned", desc: "Ashland locals supporting Ashland locals — this is home turf" },
@@ -51,7 +50,7 @@ export default function AboutPage() {
                 <p>
                   SudsOnWheels was built by a group of Ashland University wrestlers who decided
                   to channel that same discipline and work ethic into something of their own.
-                  Average age 21. No franchise, no middleman — when you call, you&apos;re talking
+                  Average age 21-24. No franchise, no middleman — when you call, you&apos;re talking
                   to the owners. When we show up, we&apos;re the ones holding the wand.
                 </p>
                 <p>
@@ -112,7 +111,7 @@ export default function AboutPage() {
             <p className="mb-2 text-[10px] font-bold uppercase tracking-[0.2em] text-brand-red">Service Area</p>
             <h2 className="mb-5 text-2xl font-black text-navy">Based in Ashland — We Come to You</h2>
             <div className="overflow-hidden rounded-2xl border-2 border-navy shadow-md">
-              <MapEmbed size="md" zoom={11} />
+              <MapEmbed size="md" />
             </div>
           </div>
 
