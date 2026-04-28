@@ -82,6 +82,23 @@ export default function LeadCard({ lead, onUpdate }: Props) {
     onUpdate();
   }
 
+  async function handleDelete() {
+    if (!window.confirm("Delete this lead? This cannot be undone. Associated jobs will also be deleted.")) {
+      return;
+    }
+    setBusy(true);
+    setError("");
+    const res = await fetch(`/api/admin/leads/${lead.id}`, {
+      method: "DELETE",
+    });
+    setBusy(false);
+    if (!res.ok) {
+      setError("Could not delete lead.");
+      return;
+    }
+    onUpdate();
+  }
+
   return (
     <div
       className={`rounded-lg border p-4 transition-opacity ${
@@ -225,6 +242,15 @@ export default function LeadCard({ lead, onUpdate }: Props) {
               >
                 Reject
               </Button>
+              <Button
+                size="sm"
+                variant="outline"
+                className="border-brand-red/30 text-brand-red hover:bg-red-50"
+                onClick={handleDelete}
+                disabled={busy}
+              >
+                Delete
+              </Button>
             </>
           )}
           {lead.status === "quoted" && (
@@ -246,16 +272,16 @@ export default function LeadCard({ lead, onUpdate }: Props) {
               >
                 Revise
               </Button>
+              <Button
+                size="sm"
+                variant="outline"
+                className="border-brand-red/30 text-brand-red hover:bg-red-50"
+                onClick={handleDelete}
+                disabled={busy}
+              >
+                Delete
+              </Button>
             </>
-          )}
-          {lead.status === "approved" && (
-            <Button
-              size="sm"
-              className="bg-navy text-white hover:bg-navy/90"
-              onClick={() => setInlineForm("schedule")}
-            >
-              Schedule
-            </Button>
           )}
           {lead.status === "scheduled" && (
             <>
@@ -267,13 +293,15 @@ export default function LeadCard({ lead, onUpdate }: Props) {
               >
                 {busy ? "Saving..." : "Mark Done"}
               </Button>
-              {lead.scheduled_job_id && (
-                <a href={`/api/admin/jobs/${lead.scheduled_job_id}/ics`} download>
-                  <Button size="sm" variant="outline" type="button">
-                    Add to Calendar
-                  </Button>
-                </a>
-              )}
+              <Button
+                size="sm"
+                variant="outline"
+                className="border-brand-red/30 text-brand-red hover:bg-red-50"
+                onClick={handleDelete}
+                disabled={busy}
+              >
+                Delete
+              </Button>
             </>
           )}
         </div>
