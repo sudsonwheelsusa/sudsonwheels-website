@@ -93,3 +93,80 @@ export async function PATCH(
 
   return NextResponse.json({ success: true, lead: updated });
 }
+
+export async function DELETE(
+  request: NextRequest,
+  context: { params: Promise<{ leadId: string }> }
+) {
+  const ip = getClientIp(request);
+  if (ratelimit) {
+    const { success } = await ratelimit.limit(ip);
+    if (!success) {
+      return NextResponse.json({ error: "Too many requests." }, { status: 429 });
+    }
+  }
+
+  await requireAdmin();
+
+  const { leadId } = await context.params;
+  const supabase = createAdminClient();
+
+  // Get the lead to verify it exists
+  const { data: lead } = await supabase
+    .from("leads")
+    .select("id")
+    .eq("id", leadId)
+    .single();
+
+  if (!lead) {
+    return NextResponse.json({ error: "Lead not found." }, { status: 404 });
+  }
+
+  // Get all jobs linked to this lead to clean up Google Calendar events
+  const { data: jobs } = await supabase
+    .from("jobs")
+    .select("id, gcal_event_id, created_by")
+    .eq("lead_id", leadId);
+
+  // Fire-and-forget: clean up Google Calendar events
+  if (jobs && jobs.length > 0) {
+    void (async () => {
+      try {
+        const supabaseAdmin = createAdminClient();
+
+        for (const job of jobs) {
+          if (!job.gcal_event_id) continue;
+
+          // Get admin profile for tokens
+          const { data: profile } = await supabaseAdmin
+            .from("profiles")
+            .select("google_tokens, google_calendar_id")
+            .eq("id", job.created_by as string)
+            .single();
+
+          if (!profile?.google_tokens) continue;
+
+          const tokens = profile.google_tokens as GoogleTokens;
+          const validTokens = await getValidTokens(tokens);
+          const calendarId = (profile.google_calendar_id as string | null) ?? "primary";
+
+          await deleteCalendarEvent(validTokens, calendarId, job.gcal_event_id as string);
+        }
+      } catch (err) {
+        console.error("Google Calendar cleanup on lead delete failed:", err);
+      }
+    })();
+  }
+
+  // Delete the lead (this cascades to jobs due to foreign key constraint)
+  const { error: deleteError } = await supabase
+    .from("leads")
+    .delete()
+    .eq("id", leadId);
+
+  if (deleteError) {
+    return NextResponse.json({ error: "Could not delete lead." }, { status: 500 });
+  }
+
+  return NextResponse.json({ success: true });
+}

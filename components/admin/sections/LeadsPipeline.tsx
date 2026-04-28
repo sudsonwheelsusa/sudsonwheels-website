@@ -5,12 +5,11 @@ import { createClient } from "@/lib/supabase/browser";
 import type { LeadRecord } from "@/lib/types";
 import LeadCard from "./LeadCard";
 
-type Column = "new" | "quoted" | "approved" | "scheduled" | "done";
+type Column = "new" | "quoted" | "scheduled" | "done";
 
 const COLUMNS: { key: Column; label: string; badgeClass: string }[] = [
   { key: "new", label: "New", badgeClass: "bg-navy/8 text-navy" },
   { key: "quoted", label: "Quoted", badgeClass: "bg-amber-100 text-amber-800" },
-  { key: "approved", label: "Approved", badgeClass: "bg-blue-100 text-blue-800" },
   { key: "scheduled", label: "Scheduled", badgeClass: "bg-emerald-100 text-emerald-800" },
   { key: "done", label: "Done", badgeClass: "bg-navy/5 text-navy/35" },
 ];
@@ -21,6 +20,7 @@ const LEAD_SELECT =
 function getColumn(lead: LeadRecord): Column {
   if (lead.completed_at != null) return "done";
   if (lead.status === "rejected") return "done";
+  if (lead.status === "approved") return "quoted";
   return lead.status as Column;
 }
 
