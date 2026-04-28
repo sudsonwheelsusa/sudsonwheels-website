@@ -4,6 +4,7 @@ export const leadSchema = z.object({
   first_name: z.string().min(1, "First name is required"),
   last_name: z.string().min(1, "Last name is required"),
   email: z.string().email("Enter a valid email address"),
+  phone: z.string().max(20).optional(),
   service_id: z.string().uuid("Select a service"),
   location_address: z.string().min(5, "Enter the service address"),
   location_lat: z.number().min(-90).max(90).optional(),

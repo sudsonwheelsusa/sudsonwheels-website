@@ -69,7 +69,7 @@ export async function POST(
     approve: ["new", "quoted"],
     reject: ["new", "quoted"],
     quote: ["new"],
-    schedule: ["approved"],
+    schedule: ["approved", "quoted"],
   };
 
   const allowedActions = validTransitions[input.action] || [];
