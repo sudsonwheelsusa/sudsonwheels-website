@@ -1,12 +1,12 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 
 const TESTIMONIALS = [
   {
     quote: "These guys handle the fleet washing for Valley Transportation and I've seen the work up close. Fast, thorough, professional every single time. Our trucks always look sharp leaving the yard.",
     name: "Valley Transportation",
-    location: "Ashland, OH — Commercial Contract ",
+    location: "Ashland, OH — Commercial Contract",
   },
   {
     quote: "We brought SudsOnWheels in for our facility at Scott's Industry and the results were exactly what we needed. Dependable, efficient, and they got it done right without disrupting our operation.",
@@ -20,6 +20,15 @@ export default function TestimonialCarousel() {
 
   const prev = () => setIndex((i) => (i - 1 + TESTIMONIALS.length) % TESTIMONIALS.length);
   const next = () => setIndex((i) => (i + 1) % TESTIMONIALS.length);
+
+  useEffect(() => {
+    const onKey = (e: KeyboardEvent) => {
+      if (e.key === "ArrowLeft") prev();
+      if (e.key === "ArrowRight") next();
+    };
+    window.addEventListener("keydown", onKey);
+    return () => window.removeEventListener("keydown", onKey);
+  }, []);
 
   const t = TESTIMONIALS[index];
 
