@@ -10,9 +10,17 @@ import ScrollReveal from "@/components/ScrollReveal";
 import TestimonialCarousel from "@/components/TestimonialCarousel";
 
 export const metadata: Metadata = {
-  title: "SudsOnWheels - Mobile Pressure Washing | Ashland, OH",
+  title: "SudsOnWheels — Mobile Pressure Washing | Ashland, OH",
   description:
     "Professional mobile pressure washing serving Ashland and North Central Ohio. Free estimates for houses, driveways, decks, gutters, and fleet washing.",
+  alternates: { canonical: "/" },
+  openGraph: {
+    title: "SudsOnWheels — Mobile Pressure Washing | Ashland, OH",
+    description:
+      "Professional mobile pressure washing serving Ashland and North Central Ohio. Free estimates for houses, driveways, decks, gutters, and fleet washing.",
+    url: "/",
+    type: "website",
+  },
 };
 
 const TRUST_ITEMS = [
@@ -44,9 +52,9 @@ export default async function HomePage() {
   return (
     <main>
       {/* ── Hero ── */}
-      <section className="grid min-h-screen md:grid-cols-2 overflow-hidden">
+      <section className="grid overflow-hidden md:grid-cols-2 md:min-h-screen">
         {/* Left copy — subtle grid texture + fade-up animations */}
-        <div className="hero-copy-bg relative flex flex-col justify-center bg-navy px-8 py-14 md:px-14">
+        <div className="hero-copy-bg relative flex flex-col justify-center bg-navy px-6 py-12 min-h-[calc(100vh-4rem)] md:min-h-0 md:px-14 md:py-14">
           <p className="hero-eyebrow mb-3 text-xs font-bold uppercase tracking-[0.2em] text-brand-red">
             Ashland &amp; North Central Ohio
           </p>

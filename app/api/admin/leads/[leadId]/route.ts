@@ -1,34 +1,28 @@
 import "server-only";
 
 import { NextRequest, NextResponse } from "next/server";
-import { createClient } from "@/lib/supabase/server";
 import { createAdminClient } from "@/lib/supabase/admin";
+import { requireAdmin } from "@/lib/auth/admin";
 import { adminMarkDoneSchema } from "@/lib/schemas/admin-mark-done";
+import { getValidTokens, deleteCalendarEvent } from "@/lib/google/calendar";
+import type { GoogleTokens } from "@/lib/types";
+import { createRatelimiter, getClientIp } from "@/lib/security/ratelimit";
 
-async function getAdminUserId(): Promise<string | null> {
-  const supabase = await createClient();
-  const { data, error } = await supabase.auth.getClaims();
-  if (error) return null;
-  const userId = typeof data?.claims?.sub === "string" ? data.claims.sub : null;
-  if (!userId) return null;
-
-  const { data: profile, error: profileError } = await supabase
-    .from("profiles")
-    .select("role")
-    .eq("id", userId)
-    .maybeSingle();
-
-  return !profileError && profile?.role === "admin" ? userId : null;
-}
+const ratelimit = createRatelimiter(60, "1 m");
 
 export async function PATCH(
   request: NextRequest,
   context: { params: Promise<{ leadId: string }> }
 ) {
-  const adminId = await getAdminUserId();
-  if (!adminId) {
-    return NextResponse.json({ error: "Unauthorized." }, { status: 401 });
+  const ip = getClientIp(request);
+  if (ratelimit) {
+    const { success } = await ratelimit.limit(ip);
+    if (!success) {
+      return NextResponse.json({ error: "Too many requests." }, { status: 429 });
+    }
   }
+
+  await requireAdmin();
 
   const { leadId } = await context.params;
 
@@ -56,6 +50,46 @@ export async function PATCH(
   if (updateError || !updated) {
     return NextResponse.json({ error: "Could not update lead." }, { status: 500 });
   }
+
+  // Fire-and-forget: delete the Google Calendar event when job is marked done
+  void (async () => {
+    try {
+      const supabaseAdmin = createAdminClient();
+
+      // Get the job linked to this lead
+      const { data: job } = await supabaseAdmin
+        .from("jobs")
+        .select("id, gcal_event_id, created_by")
+        .eq("lead_id", leadId)
+        .order("created_at", { ascending: false })
+        .limit(1)
+        .single();
+
+      if (!job?.gcal_event_id) return;
+
+      // Get admin profile for tokens using created_by from the job
+      const { data: profile } = await supabaseAdmin
+        .from("profiles")
+        .select("google_tokens, google_calendar_id")
+        .eq("id", job.created_by as string)
+        .single();
+
+      if (!profile?.google_tokens) return;
+
+      const tokens = profile.google_tokens as GoogleTokens;
+      const validTokens = await getValidTokens(tokens);
+      const calendarId = (profile.google_calendar_id as string | null) ?? "primary";
+
+      await deleteCalendarEvent(validTokens, calendarId, job.gcal_event_id as string);
+
+      await supabaseAdmin
+        .from("jobs")
+        .update({ gcal_event_id: null, gcal_synced_at: new Date().toISOString() })
+        .eq("id", job.id);
+    } catch (err) {
+      console.error("Google Calendar delete on mark-done failed:", err);
+    }
+  })();
 
   return NextResponse.json({ success: true, lead: updated });
 }

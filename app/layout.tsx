@@ -6,6 +6,7 @@ import "./globals.css";
 import { validateServerEnvironment } from "@/lib/supabase/config";
 import {
   CONTACT_EMAIL,
+  CONTACT_PHONE,
   SOCIAL_LINKS,
   DEFAULT_SERVICE_AREA,
 } from "@/lib/constants/site";
@@ -45,6 +46,7 @@ const jsonLd = {
   name: "SudsOnWheels",
   url: "https://sudsonwheelsusa.com",
   email: CONTACT_EMAIL,
+  telephone: CONTACT_PHONE,
   address: {
     "@type": "PostalAddress",
     addressLocality: "Ashland",

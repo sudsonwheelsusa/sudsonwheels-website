@@ -58,7 +58,7 @@ const SERVICE_AREA = [
 export default function Footer() {
   return (
     <footer className="bg-[#142540] text-white">
-      <div className="mx-auto max-w-6xl px-6 py-14 grid gap-10 md:grid-cols-[1.8fr_1fr_1fr_1fr]">
+      <div className="mx-auto max-w-6xl px-6 py-14 grid gap-8 sm:grid-cols-2 md:grid-cols-[1.8fr_1fr_1fr_1fr] md:gap-10">
 
         {/* Brand column */}
         <div className="space-y-4">
@@ -84,6 +84,7 @@ export default function Footer() {
             customers across Ashland County and North Central Ohio. We bring the
             equipment to you.
           </p>
+          <p className="text-sm font-semibold text-white/80">Licensed, insured</p>
           <a
             href={`mailto:${CONTACT_EMAIL}`}
             className="inline-flex items-center gap-2 bg-brand-red text-white text-sm font-bold px-4 py-2.5 rounded-lg hover:bg-brand-red/90 transition-colors"
