@@ -69,13 +69,19 @@ export default function CreateJobSheet({ open, onOpenChange, onCreated }: Props)
       .then(({ data }) => setServices((data ?? []) as ServiceRecord[]));
   }, []);
 
+  function localDateTimeToISO(dateStr: string, timeStr: string): string {
+    const localDate = new Date(`${dateStr}T${timeStr}`);
+    const offset = localDate.getTimezoneOffset() * 60 * 1000;
+    return new Date(localDate.getTime() + offset).toISOString();
+  }
+
   async function onSubmit(values: FormValues) {
     setSubmitting(true);
     setError(null);
 
-    const startISO = new Date(`${values.date}T${values.start_time}`).toISOString();
+    const startISO = localDateTimeToISO(values.date, values.start_time);
     const endISO = values.end_time
-      ? new Date(`${values.date}T${values.end_time}`).toISOString()
+      ? localDateTimeToISO(values.date, values.end_time)
       : undefined;
 
     const body: Record<string, unknown> = {
