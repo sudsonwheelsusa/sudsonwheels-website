@@ -43,6 +43,7 @@ export default function CalendarSection() {
     const { data } = await supabase
       .from("jobs")
       .select("id, lead_id, estimate_id, parent_job_id, title, status, scheduled_start, scheduled_end, service_name, customer_name, location_address, location_lat, location_lng, notes, created_by, created_at, gcal_event_id, gcal_synced_at, recurrence_rule, units_completed, rate_per_unit, total_revenue")
+      .neq("status", "cancelled")
       .order("scheduled_start", { ascending: true });
     setJobs((data ?? []) as JobRecord[]);
   }

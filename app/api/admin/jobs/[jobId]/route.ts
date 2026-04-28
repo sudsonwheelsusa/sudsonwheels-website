@@ -89,6 +89,14 @@ export async function PATCH(
     const { error } = await supabase.from("jobs").update({ status: "cancelled" }).eq("id", jobId);
     if (error) return NextResponse.json({ error: "Update failed" }, { status: 500 });
 
+    // If this job is linked to a lead, reset the lead's scheduled_job_id and status back to 'quoted'
+    if (job.lead_id) {
+      await supabase
+        .from("leads")
+        .update({ scheduled_job_id: null, status: "quoted" })
+        .eq("id", job.lead_id);
+    }
+
     if (tokens && job.gcal_event_id) {
       try {
         const valid = await getValidTokens(tokens);
@@ -127,6 +135,15 @@ export async function DELETE(
 
   if (scope !== "series") {
     await supabase.from("jobs").update({ status: "cancelled" }).eq("id", jobId);
+    
+    // If this job is linked to a lead, reset the lead
+    if (targetJob.lead_id) {
+      await supabase
+        .from("leads")
+        .update({ scheduled_job_id: null, status: "quoted" })
+        .eq("id", targetJob.lead_id);
+    }
+
     if (tokens && targetJob.gcal_event_id) {
       try {
         const valid = await getValidTokens(tokens);
@@ -141,13 +158,25 @@ export async function DELETE(
 
   const { data: allJobs } = await supabase
     .from("jobs")
-    .select("id, gcal_event_id")
+    .select("id, gcal_event_id, lead_id")
     .or(`id.eq.${parentId},parent_job_id.eq.${parentId}`)
     .neq("status", "cancelled");
 
   if (allJobs && allJobs.length > 0) {
     const ids = allJobs.map((j: { id: string }) => j.id);
     await supabase.from("jobs").update({ status: "cancelled" }).in("id", ids);
+
+    // Reset all associated leads
+    const leadIds = allJobs
+      .filter((j: { lead_id?: string | null }) => j.lead_id)
+      .map((j: { lead_id?: string | null }) => j.lead_id);
+    
+    if (leadIds.length > 0) {
+      await supabase
+        .from("leads")
+        .update({ scheduled_job_id: null, status: "quoted" })
+        .in("id", leadIds);
+    }
 
     if (tokens) {
       for (const j of allJobs) {
