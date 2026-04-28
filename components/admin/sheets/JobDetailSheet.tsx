@@ -39,13 +39,15 @@ export default function JobDetailSheet({ job, onClose, onUpdated }: Props) {
 
   async function handleComplete() {
     if (!job) return;
+    const unitsInt = parseInt(units, 10);
     if (!units || !rate) { setError("Enter units and rate"); return; }
+    if (!Number.isInteger(unitsInt) || unitsInt < 1) { setError("Units must be a whole number ≥ 1"); return; }
     setSubmitting(true);
     setError(null);
     const res = await fetch(`/api/admin/jobs/${job.id}`, {
       method: "PATCH",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ action: "complete", units_completed: Number(units), rate_per_unit: Number(rate) }),
+      body: JSON.stringify({ action: "complete", units_completed: unitsInt, rate_per_unit: Number(rate) }),
     });
     setSubmitting(false);
     if (!res.ok) { setError("Failed to mark complete"); return; }

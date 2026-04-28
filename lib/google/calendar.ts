@@ -97,7 +97,7 @@ export async function updateCalendarEvent(
 ): Promise<CalendarEventResult> {
   return calFetch<CalendarEventResult>(
     tokens,
-    `/calendars/${encodeURIComponent(calendarId)}/events/${eventId}`,
+    `/calendars/${encodeURIComponent(calendarId)}/events/${encodeURIComponent(eventId)}`,
     { method: "PATCH", body: JSON.stringify(event) },
   );
 }
@@ -109,7 +109,7 @@ export async function deleteCalendarEvent(
 ): Promise<void> {
   return calFetch<void>(
     tokens,
-    `/calendars/${encodeURIComponent(calendarId)}/events/${eventId}`,
+    `/calendars/${encodeURIComponent(calendarId)}/events/${encodeURIComponent(eventId)}`,
     { method: "DELETE" },
   );
 }

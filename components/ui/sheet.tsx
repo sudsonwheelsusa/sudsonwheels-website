@@ -7,7 +7,7 @@ import { XIcon } from "lucide-react"
 import { cn } from "@/lib/utils"
 
 function Sheet({ ...props }: React.ComponentProps<typeof Dialog.Root>) {
-  return <Dialog.Root data-slot="sheet" {...props} />
+  return <Dialog.Root {...props} />
 }
 
 function SheetTrigger({
