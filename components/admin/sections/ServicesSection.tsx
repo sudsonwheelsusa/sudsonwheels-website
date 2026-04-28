@@ -273,7 +273,7 @@ export default function ServicesSection() {
                       checked={service.is_active}
                       onCheckedChange={() => toggle(service)}
                       disabled={busyKey === `toggle:${service.id}`}
-                      aria-label={service.is_active ? "Active" : "Inactive"}
+                      aria-label={`${service.name} ${service.is_active ? "active" : "inactive"}`}
                     />
                     <button
                       type="button"

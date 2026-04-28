@@ -44,8 +44,8 @@ async function mockTurnstile(page: Page) {
  * Log in as admin and land on the dashboard.
  * Handles the Turnstile widget and the optional MFA step.
  *
- * If the test account has TOTP MFA enrolled, set TEST_ADMIN_TOTP_SECRET in the
- * environment and this helper will derive the current 6-digit code automatically.
+ * If the test account has TOTP MFA enrolled, set TEST_ADMIN_TOTP_CODE in the
+ * environment and this helper will use it as the current 6-digit code.
  * In practice, E2E test accounts should NOT have MFA enabled so this path is
  * not exercised during automated runs.
  */
