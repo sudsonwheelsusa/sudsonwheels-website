@@ -40,17 +40,10 @@ export default function LeadCard({ lead, onUpdate }: Props) {
     if (notes) payload.estimate_notes = notes;
     if (amount) payload.quoted_amount = Number(amount);
     if (scheduledStart) {
-      // datetime-local doesn't include timezone, so JS interprets as UTC by default.
-      // Convert to ISO string while treating the input as local time (America/New_York).
-      const date = new Date(scheduledStart);
-      const offset = date.getTimezoneOffset() * 60_000;
-      payload.scheduled_start = new Date(date.getTime() - offset).toISOString();
+      payload.scheduled_start = new Date(scheduledStart).toISOString();
     }
     if (scheduledEnd) {
-      // Same timezone adjustment for end time
-      const date = new Date(scheduledEnd);
-      const offset = date.getTimezoneOffset() * 60_000;
-      payload.scheduled_end = new Date(date.getTime() - offset).toISOString();
+      payload.scheduled_end = new Date(scheduledEnd).toISOString();
     }
     if (title) payload.title = title;
 
@@ -189,6 +182,8 @@ export default function LeadCard({ lead, onUpdate }: Props) {
             type="datetime-local"
             value={scheduledEnd}
             onChange={(e) => setScheduledEnd(e.target.value)}
+            placeholder="End time (optional)"
+            title="End time (optional)"
             className="w-full rounded-md border border-navy/15 px-3 py-2 text-sm"
           />
           <div className="flex gap-2">
