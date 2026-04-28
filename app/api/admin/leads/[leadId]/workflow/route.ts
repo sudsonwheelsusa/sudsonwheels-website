@@ -1,4 +1,4 @@
-import { NextRequest, NextResponse } from "next/server";
+import { NextRequest, NextResponse, after } from "next/server";
 import { createAdminClient } from "@/lib/supabase/admin";
 import { requireAdmin } from "@/lib/auth/admin";
 import { adminLeadWorkflowSchema } from "@/lib/schemas/admin-workflow";
@@ -195,24 +195,24 @@ export async function POST(
   }
 
   if (input.action === "quote" && updatedLead.quoted_amount) {
-    void sendQuoteEmail({
-      lead: updatedLead satisfies LeadRecord,
-      amount: Number(updatedLead.quoted_amount),
-      notes: input.estimate_notes,
-    }).catch((error) => {
-      console.error("Quote email failure:", error);
-    });
+    after(() =>
+      sendQuoteEmail({
+        lead: updatedLead satisfies LeadRecord,
+        amount: Number(updatedLead.quoted_amount!),
+        notes: input.estimate_notes,
+      }).catch((error) => { console.error("Quote email failure:", error); })
+    );
   }
 
   if (input.action === "schedule" && jobRecord) {
     const icsContent = generateJobIcs(jobRecord);
-    void sendScheduledJobEmail({
-      lead: updatedLead satisfies LeadRecord,
-      job: jobRecord,
-      icsContent,
-    }).catch((error) => {
-      console.error("Scheduled job email failure:", error);
-    });
+    after(() =>
+      sendScheduledJobEmail({
+        lead: updatedLead satisfies LeadRecord,
+        job: jobRecord!,
+        icsContent,
+      }).catch((error) => { console.error("Scheduled job email failure:", error); })
+    );
 
     // Fire-and-forget: sync the new job to Google Calendar
     void (async () => {

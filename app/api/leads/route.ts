@@ -1,4 +1,4 @@
-import { NextRequest, NextResponse } from "next/server";
+import { NextRequest, NextResponse, after } from "next/server";
 import { createAdminClient } from "@/lib/supabase/admin";
 import { sendLeadNotificationEmails } from "@/lib/email/send";
 import { leadSchema } from "@/lib/schemas/lead";
@@ -117,10 +117,10 @@ export async function POST(request: NextRequest) {
     );
   }
 
-  void sendLeadNotificationEmails(insertedLead satisfies LeadRecord).catch(
-    (error) => {
-      console.error("Lead email failure:", error);
-    }
+  after(() =>
+    sendLeadNotificationEmails(insertedLead satisfies LeadRecord).catch(
+      (error) => { console.error("Lead email failure:", error); }
+    )
   );
 
   return NextResponse.json({ success: true });

@@ -22,7 +22,10 @@ async function sendEmail(input: {
   attachments?: Array<{ filename: string; content: string }>;
 }) {
   const resend = getResend();
-  if (!resend) return;
+  if (!resend) {
+    console.warn("Email not sent: RESEND_API_KEY is not configured.");
+    return;
+  }
 
   await resend.emails.send({
     from: FROM_EMAIL,
@@ -42,7 +45,7 @@ export async function sendLeadNotificationEmails(lead: LeadRecord) {
     "",
     `Lead ID: ${lead.id}`,
     `Name: ${lead.first_name} ${lead.last_name}`,
-    `Phone: ${lead.phone}`,
+    lead.phone ? `Phone: ${lead.phone}` : "",
     `Email: ${lead.email}`,
     `Service: ${lead.service_name}`,
     lead.location_address ? `Address: ${lead.location_address}` : "",
