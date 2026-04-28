@@ -5,6 +5,11 @@ import { Button } from "@/components/ui/button";
 import { createClient } from "@/lib/supabase/browser";
 import type { JobRecord } from "@/lib/types";
 
+async function cancelJob(jobId: string): Promise<boolean> {
+  const res = await fetch(`/api/admin/jobs/${jobId}`, { method: "DELETE" });
+  return res.ok;
+}
+
 function getMonthGrid(month: Date): Date[] {
   const firstDay = new Date(month.getFullYear(), month.getMonth(), 1);
   const lastDay = new Date(month.getFullYear(), month.getMonth() + 1, 0);
@@ -25,23 +30,23 @@ function getMonthGrid(month: Date): Date[] {
 export default function CalendarSection() {
   const [jobs, setJobs] = useState<JobRecord[]>([]);
   const [loading, setLoading] = useState(true);
+  const [cancellingId, setCancellingId] = useState<string | null>(null);
   const [currentMonth, setCurrentMonth] = useState(() => {
     const today = new Date();
     return new Date(today.getFullYear(), today.getMonth(), 1);
   });
 
-  useEffect(() => {
-    async function load() {
-      const supabase = createClient();
-      const { data } = await supabase
-        .from("jobs")
-        .select("id, lead_id, estimate_id, title, status, scheduled_start, scheduled_end, service_name, customer_name, location_address, location_lat, location_lng, notes, created_by, created_at")
-        .order("scheduled_start", { ascending: true });
-      setJobs((data ?? []) as JobRecord[]);
-      setLoading(false);
-    }
-    void load();
-  }, []);
+  async function loadJobs() {
+    const supabase = createClient();
+    const { data } = await supabase
+      .from("jobs")
+      .select("id, lead_id, estimate_id, title, status, scheduled_start, scheduled_end, service_name, customer_name, location_address, location_lat, location_lng, notes, created_by, created_at")
+      .order("scheduled_start", { ascending: true });
+    setJobs((data ?? []) as JobRecord[]);
+    setLoading(false);
+  }
+
+  useEffect(() => { void loadJobs(); }, []);
 
   const gridDays = getMonthGrid(currentMonth);
 
@@ -120,13 +125,29 @@ export default function CalendarSection() {
                           })}
                         </p>
                         <p className="truncate text-slate-500">{job.service_name}</p>
-                        <a
-                          href={`/api/admin/jobs/${job.id}/ics`}
-                          download
-                          className="mt-1 inline-block text-[10px] font-semibold text-navy underline underline-offset-2 hover:text-navy/70"
-                        >
-                          + Calendar
-                        </a>
+                        <div className="mt-1 flex items-center gap-2">
+                          <a
+                            href={`/api/admin/jobs/${job.id}/ics`}
+                            download
+                            className="text-[10px] font-semibold text-navy underline underline-offset-2 hover:text-navy/70"
+                          >
+                            + Calendar
+                          </a>
+                          <button
+                            type="button"
+                            disabled={cancellingId === job.id}
+                            onClick={async () => {
+                              if (!confirm(`Cancel job for ${job.customer_name}? This will return the lead to the pipeline.`)) return;
+                              setCancellingId(job.id);
+                              const ok = await cancelJob(job.id);
+                              setCancellingId(null);
+                              if (ok) void loadJobs();
+                            }}
+                            className="text-[10px] font-semibold text-red-500 underline underline-offset-2 hover:text-red-700 disabled:opacity-40"
+                          >
+                            {cancellingId === job.id ? "Cancelling…" : "Cancel"}
+                          </button>
+                        </div>
                       </div>
                     ))}
                   </div>
