@@ -75,10 +75,18 @@ export interface EstimateRecord {
   created_at: string;
 }
 
+export interface RecurrenceRule {
+  freq: "daily" | "weekly" | "monthly";
+  interval: number;
+  days?: string[];
+  end_date?: string;
+}
+
 export interface JobRecord {
   id: string;
-  lead_id: string;
+  lead_id: string | null;
   estimate_id: string | null;
+  parent_job_id: string | null;
   title: string;
   status: "pending" | "scheduled" | "completed" | "cancelled";
   scheduled_start: string;
@@ -89,6 +97,18 @@ export interface JobRecord {
   location_lat: number | null;
   location_lng: number | null;
   notes: string | null;
+  recurrence_rule: RecurrenceRule | null;
+  units_completed: number | null;
+  rate_per_unit: number | null;
+  total_revenue: number | null;
   created_by: string | null;
   created_at: string;
+  gcal_event_id: string | null;
+  gcal_synced_at: string | null;
+}
+
+export interface GoogleTokens {
+  access_token: string;
+  refresh_token: string;
+  expiry_ms: number;
 }

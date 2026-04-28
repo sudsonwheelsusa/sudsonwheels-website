@@ -1,6 +1,6 @@
 "use client";
 
-import { GoogleMap, useJsApiLoader, Marker } from "@react-google-maps/api";
+import { GoogleMap, useJsApiLoader, OverlayView } from "@react-google-maps/api";
 import { useCallback, useState } from "react";
 
 export type LatLng = { lat: number; lng: number };
@@ -58,17 +58,9 @@ export default function LocationPickerMap({ value, onChange }: Props) {
       onUnmount={onUnmount}
     >
       {value && (
-        <Marker
-          position={value}
-          icon={{
-            path: google.maps.SymbolPath.CIRCLE,
-            scale: 9,
-            fillColor: "#c8102e",
-            fillOpacity: 1,
-            strokeColor: "#ffffff",
-            strokeWeight: 2.5,
-          }}
-        />
+        <OverlayView position={value} mapPaneName={OverlayView.OVERLAY_LAYER}>
+          <div className="size-4.5 -translate-x-1/2 -translate-y-1/2 rounded-full border-[2.5px] border-white bg-[#c8102e] pointer-events-none" />
+        </OverlayView>
       )}
     </GoogleMap>
   );

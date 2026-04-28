@@ -140,6 +140,21 @@ export default function QuoteForm({ serviceOptions }: QuoteFormProps) {
 
       <div>
         <label className="mb-1 block text-xs font-semibold text-gray-600">
+          Phone <span className="font-normal text-gray-400">(optional — for faster updates)</span>
+        </label>
+        <input
+          {...register("phone")}
+          type="tel"
+          placeholder="(555) 555-5555"
+          className="w-full rounded-md border border-gray-200 bg-gray-50 px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-navy/30"
+        />
+        {errors.phone ? (
+          <p className="mt-1 text-xs text-brand-red">{errors.phone.message}</p>
+        ) : null}
+      </div>
+
+      <div>
+        <label className="mb-1 block text-xs font-semibold text-gray-600">
           Service Needed
         </label>
         <select
@@ -207,7 +222,7 @@ export default function QuoteForm({ serviceOptions }: QuoteFormProps) {
       />
       {turnstileError ? (
         <p className="text-xs text-brand-red">
-          Bot verification failed to load. Try disabling tracking protection or use a different browser.
+          Security check failed to load. Try refreshing the page or switching to a different browser.
         </p>
       ) : errors.turnstile_token ? (
         <p className="text-xs text-brand-red">{errors.turnstile_token.message}</p>

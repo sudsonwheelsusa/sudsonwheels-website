@@ -11,6 +11,14 @@ export const metadata: Metadata = {
   title: "Services",
   description:
     "Pressure washing services for houses, driveways, decks, gutters, roof soft wash, and commercial fleet washing in Ashland and North Central Ohio.",
+  alternates: { canonical: "/services" },
+  openGraph: {
+    title: "Pressure Washing Services | SudsOnWheels",
+    description:
+      "Residential and commercial pressure washing in North Central Ohio — houses, driveways, decks, gutters, fleet washing, and roof soft wash.",
+    url: "/services",
+    type: "website",
+  },
 };
 
 const SERVICE_DETAILS: Record<string, { features: string[]; price: string }> = {
@@ -43,8 +51,38 @@ const SERVICE_DETAILS: Record<string, { features: string[]; price: string }> = {
 export default async function ServicesPage() {
   const services = await getPublicServices();
 
+  const serviceJsonLd = {
+    "@context": "https://schema.org",
+    "@type": "ItemList",
+    name: "SudsOnWheels Services",
+    itemListElement: services.map((service, index) => ({
+      "@type": "ListItem",
+      position: index + 1,
+      item: {
+        "@type": "Service",
+        name: service.name,
+        description: service.description,
+        provider: {
+          "@type": "LocalBusiness",
+          name: "SudsOnWheels",
+          url: "https://sudsonwheelsusa.com",
+        },
+        areaServed: {
+          "@type": "State",
+          name: "Ohio",
+        },
+        serviceType: "Pressure Washing",
+      },
+    })),
+  };
+
   return (
-    <main>
+    <>
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(serviceJsonLd) }}
+      />
+      <main>
       <PageHeader
         breadcrumb="Services"
         eyebrow="What We Do"
@@ -132,5 +170,6 @@ export default async function ServicesPage() {
 
       <ScrollReveal />
     </main>
+    </>
   );
 }

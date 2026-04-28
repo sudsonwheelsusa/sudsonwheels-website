@@ -39,10 +39,12 @@ export default function LeadCard({ lead, onUpdate }: Props) {
     const payload: Record<string, unknown> = { action };
     if (notes) payload.estimate_notes = notes;
     if (amount) payload.quoted_amount = Number(amount);
-    if (scheduledStart)
+    if (scheduledStart) {
       payload.scheduled_start = new Date(scheduledStart).toISOString();
-    if (scheduledEnd)
+    }
+    if (scheduledEnd) {
       payload.scheduled_end = new Date(scheduledEnd).toISOString();
+    }
     if (title) payload.title = title;
 
     const res = await fetch(`/api/admin/leads/${lead.id}/workflow`, {
@@ -82,10 +84,10 @@ export default function LeadCard({ lead, onUpdate }: Props) {
 
   return (
     <div
-      className={`rounded-2xl border p-4 transition-opacity ${
+      className={`rounded-lg border p-4 transition-opacity ${
         isDone
-          ? "border-slate-200 bg-white opacity-60"
-          : "border-slate-200 bg-white shadow-sm"
+          ? "border-navy/8 bg-white opacity-50"
+          : "border-navy/10 bg-white shadow-sm"
       }`}
     >
       <div className="flex items-start justify-between gap-2">
@@ -93,30 +95,30 @@ export default function LeadCard({ lead, onUpdate }: Props) {
           <p className="truncate font-bold text-navy text-sm">
             {lead.first_name} {lead.last_name}
           </p>
-          <p className="text-xs text-slate-500 mt-0.5">{lead.service_name}</p>
+          <p className="text-xs text-navy/45 mt-0.5">{lead.service_name}</p>
           {lead.location_address && (
-            <p className="text-xs text-slate-400 mt-0.5 truncate">
+            <p className="text-[10px] text-navy/35 mt-0.5 truncate">
               {lead.location_address}
             </p>
           )}
-          <p className="text-xs text-slate-400 mt-0.5">
+          <p className="text-[10px] text-navy/35 mt-0.5">
             {new Date(lead.created_at).toLocaleDateString()}
           </p>
           {lead.quoted_amount != null && (
-            <p className="text-xs font-semibold text-amber-700 mt-1">
+            <p className="text-xs font-bold text-navy mt-1">
               {formatCurrency(lead.quoted_amount)}
             </p>
           )}
         </div>
         {lead.scheduled_job_id && !isDone && (
-          <span className="shrink-0 rounded-lg bg-green-50 border border-green-200 px-1.5 py-0.5 text-[10px] font-semibold text-green-700">
+          <span className="shrink-0 rounded bg-emerald-100 border border-emerald-200 px-1.5 py-0.5 text-[9px] font-bold uppercase tracking-[0.06em] text-emerald-800">
             On cal
           </span>
         )}
       </div>
 
       {lead.message && (
-        <p className="mt-2 rounded-xl bg-slate-50 px-3 py-2 text-xs text-slate-600 line-clamp-2">
+        <p className="mt-2 rounded-md bg-offwhite px-3 py-2 text-xs text-navy/55 line-clamp-2">
           {lead.message}
         </p>
       )}
@@ -132,14 +134,14 @@ export default function LeadCard({ lead, onUpdate }: Props) {
             value={amount}
             onChange={(e) => setAmount(e.target.value)}
             placeholder="Quote amount ($)"
-            className="w-full rounded-xl border border-slate-200 px-3 py-2 text-sm"
+            className="w-full rounded-md border border-navy/15 px-3 py-2 text-sm"
             autoFocus
           />
           <input
             value={notes}
             onChange={(e) => setNotes(e.target.value)}
             placeholder="Notes for customer (optional)"
-            className="w-full rounded-xl border border-slate-200 px-3 py-2 text-sm"
+            className="w-full rounded-md border border-navy/15 px-3 py-2 text-sm"
           />
           <div className="flex gap-2">
             <Button
@@ -167,20 +169,22 @@ export default function LeadCard({ lead, onUpdate }: Props) {
             value={title}
             onChange={(e) => setTitle(e.target.value)}
             placeholder="Job title"
-            className="w-full rounded-xl border border-slate-200 px-3 py-2 text-sm"
+            className="w-full rounded-md border border-navy/15 px-3 py-2 text-sm"
           />
           <input
             type="datetime-local"
             value={scheduledStart}
             onChange={(e) => setScheduledStart(e.target.value)}
-            className="w-full rounded-xl border border-slate-200 px-3 py-2 text-sm"
+            className="w-full rounded-md border border-navy/15 px-3 py-2 text-sm"
             autoFocus
           />
           <input
             type="datetime-local"
             value={scheduledEnd}
             onChange={(e) => setScheduledEnd(e.target.value)}
-            className="w-full rounded-xl border border-slate-200 px-3 py-2 text-sm"
+            placeholder="End time (optional)"
+            title="End time (optional)"
+            className="w-full rounded-md border border-navy/15 px-3 py-2 text-sm"
           />
           <div className="flex gap-2">
             <Button

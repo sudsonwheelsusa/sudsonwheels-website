@@ -6,9 +6,17 @@ import PageHeader from "@/components/PageHeader";
 import ScrollReveal from "@/components/ScrollReveal";
 
 export const metadata: Metadata = {
-  title: "Gallery | SudsOnWheels",
+  title: "Gallery",
   description:
     "See our pressure washing results — before and after photos of fleet washes, farm equipment, and more in Ashland, OH.",
+  alternates: { canonical: "/gallery" },
+  openGraph: {
+    title: "Before & After Gallery | SudsOnWheels",
+    description:
+      "Real jobs, real results. Before-and-after pressure washing photos from across North Central Ohio.",
+    url: "/gallery",
+    type: "website",
+  },
 };
 
 export default async function GalleryPage() {
@@ -81,33 +89,6 @@ export default async function GalleryPage() {
           </div>
         </div>
       </section>
-
-      {videos.length > 0 && (
-        <section className="bg-white px-6 py-14">
-          <div className="mx-auto max-w-6xl">
-            <h2 className="reveal mb-8 text-2xl font-black text-navy">See Us in Action</h2>
-            <div className="grid gap-6 sm:grid-cols-2">
-              {videos.map((video, i) => (
-                <div key={video.id} className={`reveal reveal-delay-${(i % 2) + 1} overflow-hidden rounded-xl bg-black`}>
-                  {video.video_url && (
-                    <video
-                      src={video.video_url}
-                      controls
-                      playsInline
-                      preload="metadata"
-                      className="w-full"
-                      aria-label={video.title}
-                    />
-                  )}
-                  {video.title && (
-                    <p className="px-4 py-3 text-sm font-semibold text-white">{video.title}</p>
-                  )}
-                </div>
-              ))}
-            </div>
-          </div>
-        </section>
-      )}
 
       <section className="border-t border-gray-100 bg-offwhite px-6 py-14 text-center">
         <h2 className="reveal mb-3 text-2xl font-black text-navy">Want results like these?</h2>
